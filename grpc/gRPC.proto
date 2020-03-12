@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package grpc;
+
+service grpc {
+    //index-client
+    rpc BatchWrite(WriteBatch) returns (Nothing);
+    rpc QueryPages(IndexQuery) returns (ReadBatch);
+
+    //storage-client
+    rpc PutChunks(Chunk) returns (Nothing);
+    rpc GetChunks(Chunks) returns (Chunks);
+    rpc DeleteChunks(ChunkID) returns (Nothing);
+
+    //table-client
+    rpc ListTables(Nothing) returns (ListTablesResponse);
+    rpc CreateTable(TableDesc) returns (Nothing);
+    rpc DeleteTable(TableName) returns (Nothing);
+    rpc DescribeTable(TableName) returns (DescribeTableResponse);
+    rpc UpdateTable(UpdateTableRequest) returns (Nothing);
+
+    //used by storage-client & index-client
+    rpc Stop(Nothing) returns (Nothing);
+}
+
+message Nothing {}
+
+message ChunkID {
+    string chunkId = 1;
+}
+
+message TableName {
+    string tableName = 1;
+}
+
+message WriteBatch {
+    repeated IndexEntry indexEntry = 1;
+}
+
+message ReadBatch {
+    bytes rangeValue = 1;
+    bytes value = 2;
+}
+
+message IndexEntry {
+    string tableName = 1;
+    string hashValue = 2;
+    bytes rangeValue = 3;
+    bytes value = 4;
+}
+
+message IndexQuery {
+    string tableName                 = 1;
+    string hashValue                 = 2;
+    bytes rangeValuePrefix  = 3;
+    bytes rangeValueStart   = 4;
+    bytes valueEqual        = 5;
+    bool immutable                   = 6;
+}
+
+message UpdateTableRequest {
+    TableDesc current  = 1;
+    TableDesc expected = 2;
+}
+
+message DescribeTableResponse {
+    TableDesc desc  = 1;
+    bool isActive   = 2;
+}
+
+message TableDesc {
+    string name                  = 1;
+    bool useOnDemandIOMode       = 2;
+    int64 provisionedRead        = 3;
+    int64 provisionedWrite       = 4;
+    map<string, string> tags     = 5;
+    AutoScalingConfig writeScale = 6;
+    AutoScalingConfig readScale  = 7;
+}
+
+message AutoScalingConfig {
+    bool enabled        = 1;
+    string roleARN      = 2;
+    int64 minCapacity   = 3;
+    int64 maxCapacity   = 4;
+    int64 outCoolDown   = 5;
+    int64 inCoolDown    = 6;
+    double targetValue   = 7;
+}
+
+message ListTablesResponse {
+    repeated string tables = 1;
+}
+
+message Chunks {
+    repeated ChunkInfo chunkInfo = 1;
+}
+
+message ChunkInfo {
+    int64 fingerPrint      = 1;
+    string userID          = 2;
+    int64 from             = 3;
+    int64 through          = 4;
+    repeated Label metric          = 5;
+    bool checksumSet       = 6;
+    uint32 checksum         = 7;
+    bytes encoding         = 8;
+    bytes encoded = 9;
+}
+
+message Chunk {
+    bytes buf = 1;
+    string key = 2;
+    string tableName = 3;
+}
+
+message Label {
+    string name  = 1;
+    string value = 2;
+}
+
