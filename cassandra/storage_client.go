@@ -5,17 +5,17 @@ import (
 	"cortex-cassandra-store/grpc"
 	"flag"
 	"fmt"
-	"github.com/cortexproject/cortex/pkg/chunk/util"
+	"strings"
+	"time"
+
+	"github.com/cortexproject/cortex/pkg/chunk"
+	"github.com/cortexproject/cortex/pkg/chunk/encoding"
 	"github.com/gocql/gocql"
 	"github.com/pkg/errors"
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/prometheus/pkg/labels"
 	"go.uber.org/zap"
-	"strings"
-	"time"
-	"github.com/cortexproject/cortex/pkg/chunk"
-	"github.com/cortexproject/cortex/pkg/chunk/encoding"
-	)
+)
 
 // Config for a StorageClient
 type Config struct {
@@ -126,7 +126,7 @@ func NewStorageClient(cfg Config, schemaCfg chunk.SchemaConfig) (*server, error)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	logger,_ := zap.NewProduction()
+	logger, _ := zap.NewProduction()
 	client := &server{
 		Cfg:       cfg,
 		SchemaCfg: schemaCfg,
@@ -192,16 +192,17 @@ func (b *readBatchIter) Value() []byte {
 }
 
 // PutChunks implements chunk.ObjectClient.
-func (c *server) PutChunks(ctx context.Context, chunk *grpc.Chunk) (*grpc.Nothing, error) {
-		// Must provide a range key, even though its not useds - hence 0x00.
-	    c.Logger.Info("performing put chunks.")
+func (c *server) PutChunks(ctx context.Context, chunks *grpc.ChunksData) (*grpc.Nothing, error) {
+	// Must provide a range key, even though its not useds - hence 0x00.
+	for _, chunkInfo := range chunks.Chunks {
+		c.Logger.Info("performing put chunks.", zap.String("table name", chunkInfo.TableName))
 		q := c.Session.Query(fmt.Sprintf("INSERT INTO %s (hash, range, value) VALUES (?, 0x00, ?)",
-			chunk.TableName), chunk.Key, chunk.Buf)
+			chunkInfo.TableName), chunkInfo.Key, chunkInfo.Buf)
 		if err := q.WithContext(ctx).Exec(); err != nil {
 			c.Logger.Error("failed to put chunks %s", zap.Error(err))
 			return &grpc.Nothing{}, errors.WithStack(err)
 		}
-
+	}
 	return &grpc.Nothing{}, nil
 }
 
@@ -209,21 +210,22 @@ func (c *server) DeleteChunks(ctx context.Context, chunkID *grpc.ChunkID) (*grpc
 	return &grpc.Nothing{}, chunk.ErrNotSupported
 }
 
-// GetChunks implements chunk.ObjectClient.
-func (c *server) GetChunks(ctx context.Context, input *grpc.Chunks) (*grpc.Chunks, error) {
+func (c *server) GetChunks(ctx context.Context, input *grpc.Chunks) (*grpc.ChunksResponse, error) {
 	c.Logger.Info("performing get chunks.")
 	chunkInfo := chunk.Chunk{}
 	var chunksInfo []chunk.Chunk
 	chunkInfo.Metric = labels.Labels{}
 	for _, chunkData := range input.ChunkInfo {
-		chunkInfo.From = model.TimeFromUnix(chunkData.From)
-		chunkInfo.Through = model.TimeFromUnix(chunkData.Through)
+		chunkInfo.From = model.Time(chunkData.From)
+		chunkInfo.Through = model.Time(chunkData.Through)
 		chunkInfo.Fingerprint = model.Fingerprint(chunkData.FingerPrint)
 		chunkInfo.Encoding = encoding.Encoding(chunkData.Encoding[0])
 		chunkInfo.Checksum = chunkData.Checksum
+		chunkInfo.UserID = chunkData.UserID
+		chunkInfo.ChecksumSet = chunkData.ChecksumSet
 		metric := &labels.Label{}
 		var metrics labels.Labels
-		for _, metricLabels := range chunkData.Metric{
+		for _, metricLabels := range chunkData.Metric {
 			metric.Name = metricLabels.Name
 			metric.Value = metricLabels.Value
 			metrics = append(metrics, *metric)
@@ -231,49 +233,37 @@ func (c *server) GetChunks(ctx context.Context, input *grpc.Chunks) (*grpc.Chunk
 		chunkInfo.Metric = metrics
 		chunksInfo = append(chunksInfo, chunkInfo)
 	}
-
-	grpcChunks := &grpc.Chunks{}
-	grpcChunk := &grpc.ChunkInfo{}
-	chunks, err := util.GetParallelChunks(ctx, chunksInfo, c.getChunk)
+	response := &grpc.ChunksResponse{}
+	buf, err := c.getChunk(ctx, chunksInfo)
 	if err != nil {
-		c.Logger.Error("failed to get parallel chunks %s", zap.Error(err))
-		return grpcChunks, errors.WithStack(err)
+		c.Logger.Error("failed to get get chunk %s", zap.Error(err))
+		return response, err
 	}
-
-
-	for _, chunkData := range chunks {
-		grpcChunk.From = int64(chunkData.From)
-		grpcChunk.Checksum = chunkData.Checksum
-		grpcChunk.Encoding = []byte(chunkData.Encoding.String())
-		grpcChunk.Through = int64(chunkData.Through)
-		grpcChunk.FingerPrint = int64(chunkData.Fingerprint)
-		grpcChunk.ChecksumSet = chunkData.ChecksumSet
-		grpcChunk.UserID = chunkData.UserID
-		metric := &grpc.Label{}
-		var metrics []*grpc.Label
-		for _, metricLabels := range chunkData.Metric {
-			metric.Name = metricLabels.Name
-			metric.Value = metricLabels.Value
-			metrics = append(metrics, metric)
-		}
-		grpcChunk.Metric = metrics
-	}
-	grpcChunks.ChunkInfo = append(grpcChunks.ChunkInfo, grpcChunk)
-	return grpcChunks, err
+	response.Chunks = buf.Chunks
+	return response, err
 }
 
-func (s *server) getChunk(ctx context.Context, decodeContext *chunk.DecodeContext, input chunk.Chunk) (chunk.Chunk, error) {
-	tableName, err := s.SchemaCfg.ChunkTableFor(input.From)
-	if err != nil {
-		s.Logger.Error("failed to get get chunk %s", zap.Error(err))
-		return input, err
-	}
+func (s *server) getChunk(ctx context.Context, inputs []chunk.Chunk) (grpc.ChunksResponse, error) {
+	var bufs grpc.ChunksResponse
+	s.Logger.Error("performing getChunk callback func")
+	for _, input := range inputs {
+		tableName, err := s.SchemaCfg.ChunkTableFor(input.From)
+		if err != nil {
+			s.Logger.Error("failed to get get chunk %s", zap.Error(err))
+			return bufs, err
+		}
+		var buf []byte
+		if err := s.Session.Query(fmt.Sprintf("SELECT value FROM %s WHERE hash = ?", tableName), input.ExternalKey()).
+			WithContext(ctx).Scan(&buf); err != nil {
+			s.Logger.Error("failed to do get chunks ", zap.Error(err))
+			return bufs, errors.WithStack(err)
+		}
+		chunkInfo := &grpc.ChunkResponse{
+			Checksum: input.Checksum,
+			Buf:      buf,
+		}
 
-	var buf []byte
-	if err := s.Session.Query(fmt.Sprintf("SELECT value FROM %s WHERE hash = ?", tableName), input.ExternalKey()).
-		WithContext(ctx).Scan(&buf); err != nil {
-		return input, errors.WithStack(err)
+		bufs.Chunks = append(bufs.Chunks, chunkInfo)
 	}
-	err = input.Decode(decodeContext, buf)
-	return input, err
+	return bufs, nil
 }

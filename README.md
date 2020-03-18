@@ -92,8 +92,8 @@ ingester:
 schema:
   configs:
   - from: 2019-07-29
-    store: grpc
-    object_store: grpc
+    store: grpc-store
+    object_store: grpc-store
     schema: v10
     index:
       prefix: index_
@@ -103,7 +103,7 @@ schema:
       period: 168h
 
 storage:
-  grpc: 
+  grpc-store: 
     address: localhost:6666
 
 ```

@@ -4,12 +4,13 @@ import (
 	"cortex-cassandra-store/grpc"
 	"flag"
 	"fmt"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"log"
 	"net"
 	"os"
 	"strings"
+
+	"go.uber.org/zap"
 
 	"github.com/cortexproject/cortex/pkg/chunk"
 	"github.com/cortexproject/cortex/pkg/util/flagext"
@@ -24,7 +25,7 @@ type server struct {
 	Cfg       Config             `yaml:"cfg,omitempty"`
 	SchemaCfg chunk.SchemaConfig `yaml:"schema_cfg,omitempty"`
 	Session   *gocql.Session     `yaml:"-"`
-	Logger     *zap.Logger
+	Logger    *zap.Logger
 }
 
 func (c *server) RegisterFlags(f *flag.FlagSet) {
@@ -59,7 +60,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to created new storage client")
 	}
-	grpc.RegisterGrpcServer(s, s1)
+	grpc.RegisterGrpcStoreServer(s, s1)
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)

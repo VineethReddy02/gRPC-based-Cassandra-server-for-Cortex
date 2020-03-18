@@ -24,6 +24,131 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type ChunksData struct {
+	Chunks               []*Chunk `protobuf:"bytes,1,rep,name=chunks,proto3" json:"chunks,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ChunksData) Reset()         { *m = ChunksData{} }
+func (m *ChunksData) String() string { return proto.CompactTextString(m) }
+func (*ChunksData) ProtoMessage()    {}
+func (*ChunksData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_90994c84dd9b32f5, []int{0}
+}
+
+func (m *ChunksData) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ChunksData.Unmarshal(m, b)
+}
+func (m *ChunksData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ChunksData.Marshal(b, m, deterministic)
+}
+func (m *ChunksData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ChunksData.Merge(m, src)
+}
+func (m *ChunksData) XXX_Size() int {
+	return xxx_messageInfo_ChunksData.Size(m)
+}
+func (m *ChunksData) XXX_DiscardUnknown() {
+	xxx_messageInfo_ChunksData.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ChunksData proto.InternalMessageInfo
+
+func (m *ChunksData) GetChunks() []*Chunk {
+	if m != nil {
+		return m.Chunks
+	}
+	return nil
+}
+
+type ChunksResponse struct {
+	Chunks               []*ChunkResponse `protobuf:"bytes,1,rep,name=chunks,proto3" json:"chunks,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}         `json:"-"`
+	XXX_unrecognized     []byte           `json:"-"`
+	XXX_sizecache        int32            `json:"-"`
+}
+
+func (m *ChunksResponse) Reset()         { *m = ChunksResponse{} }
+func (m *ChunksResponse) String() string { return proto.CompactTextString(m) }
+func (*ChunksResponse) ProtoMessage()    {}
+func (*ChunksResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_90994c84dd9b32f5, []int{1}
+}
+
+func (m *ChunksResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ChunksResponse.Unmarshal(m, b)
+}
+func (m *ChunksResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ChunksResponse.Marshal(b, m, deterministic)
+}
+func (m *ChunksResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ChunksResponse.Merge(m, src)
+}
+func (m *ChunksResponse) XXX_Size() int {
+	return xxx_messageInfo_ChunksResponse.Size(m)
+}
+func (m *ChunksResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ChunksResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ChunksResponse proto.InternalMessageInfo
+
+func (m *ChunksResponse) GetChunks() []*ChunkResponse {
+	if m != nil {
+		return m.Chunks
+	}
+	return nil
+}
+
+type ChunkResponse struct {
+	Checksum             uint32   `protobuf:"varint,1,opt,name=checksum,proto3" json:"checksum,omitempty"`
+	Buf                  []byte   `protobuf:"bytes,2,opt,name=buf,proto3" json:"buf,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ChunkResponse) Reset()         { *m = ChunkResponse{} }
+func (m *ChunkResponse) String() string { return proto.CompactTextString(m) }
+func (*ChunkResponse) ProtoMessage()    {}
+func (*ChunkResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_90994c84dd9b32f5, []int{2}
+}
+
+func (m *ChunkResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ChunkResponse.Unmarshal(m, b)
+}
+func (m *ChunkResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ChunkResponse.Marshal(b, m, deterministic)
+}
+func (m *ChunkResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ChunkResponse.Merge(m, src)
+}
+func (m *ChunkResponse) XXX_Size() int {
+	return xxx_messageInfo_ChunkResponse.Size(m)
+}
+func (m *ChunkResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ChunkResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ChunkResponse proto.InternalMessageInfo
+
+func (m *ChunkResponse) GetChecksum() uint32 {
+	if m != nil {
+		return m.Checksum
+	}
+	return 0
+}
+
+func (m *ChunkResponse) GetBuf() []byte {
+	if m != nil {
+		return m.Buf
+	}
+	return nil
+}
+
 type Nothing struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -34,7 +159,7 @@ func (m *Nothing) Reset()         { *m = Nothing{} }
 func (m *Nothing) String() string { return proto.CompactTextString(m) }
 func (*Nothing) ProtoMessage()    {}
 func (*Nothing) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{0}
+	return fileDescriptor_90994c84dd9b32f5, []int{3}
 }
 
 func (m *Nothing) XXX_Unmarshal(b []byte) error {
@@ -66,7 +191,7 @@ func (m *ChunkID) Reset()         { *m = ChunkID{} }
 func (m *ChunkID) String() string { return proto.CompactTextString(m) }
 func (*ChunkID) ProtoMessage()    {}
 func (*ChunkID) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{1}
+	return fileDescriptor_90994c84dd9b32f5, []int{4}
 }
 
 func (m *ChunkID) XXX_Unmarshal(b []byte) error {
@@ -105,7 +230,7 @@ func (m *TableName) Reset()         { *m = TableName{} }
 func (m *TableName) String() string { return proto.CompactTextString(m) }
 func (*TableName) ProtoMessage()    {}
 func (*TableName) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{2}
+	return fileDescriptor_90994c84dd9b32f5, []int{5}
 }
 
 func (m *TableName) XXX_Unmarshal(b []byte) error {
@@ -144,7 +269,7 @@ func (m *WriteBatch) Reset()         { *m = WriteBatch{} }
 func (m *WriteBatch) String() string { return proto.CompactTextString(m) }
 func (*WriteBatch) ProtoMessage()    {}
 func (*WriteBatch) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{3}
+	return fileDescriptor_90994c84dd9b32f5, []int{6}
 }
 
 func (m *WriteBatch) XXX_Unmarshal(b []byte) error {
@@ -184,7 +309,7 @@ func (m *ReadBatch) Reset()         { *m = ReadBatch{} }
 func (m *ReadBatch) String() string { return proto.CompactTextString(m) }
 func (*ReadBatch) ProtoMessage()    {}
 func (*ReadBatch) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{4}
+	return fileDescriptor_90994c84dd9b32f5, []int{7}
 }
 
 func (m *ReadBatch) XXX_Unmarshal(b []byte) error {
@@ -233,7 +358,7 @@ func (m *IndexEntry) Reset()         { *m = IndexEntry{} }
 func (m *IndexEntry) String() string { return proto.CompactTextString(m) }
 func (*IndexEntry) ProtoMessage()    {}
 func (*IndexEntry) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{5}
+	return fileDescriptor_90994c84dd9b32f5, []int{8}
 }
 
 func (m *IndexEntry) XXX_Unmarshal(b []byte) error {
@@ -298,7 +423,7 @@ func (m *IndexQuery) Reset()         { *m = IndexQuery{} }
 func (m *IndexQuery) String() string { return proto.CompactTextString(m) }
 func (*IndexQuery) ProtoMessage()    {}
 func (*IndexQuery) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{6}
+	return fileDescriptor_90994c84dd9b32f5, []int{9}
 }
 
 func (m *IndexQuery) XXX_Unmarshal(b []byte) error {
@@ -373,7 +498,7 @@ func (m *UpdateTableRequest) Reset()         { *m = UpdateTableRequest{} }
 func (m *UpdateTableRequest) String() string { return proto.CompactTextString(m) }
 func (*UpdateTableRequest) ProtoMessage()    {}
 func (*UpdateTableRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{7}
+	return fileDescriptor_90994c84dd9b32f5, []int{10}
 }
 
 func (m *UpdateTableRequest) XXX_Unmarshal(b []byte) error {
@@ -420,7 +545,7 @@ func (m *DescribeTableResponse) Reset()         { *m = DescribeTableResponse{} }
 func (m *DescribeTableResponse) String() string { return proto.CompactTextString(m) }
 func (*DescribeTableResponse) ProtoMessage()    {}
 func (*DescribeTableResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{8}
+	return fileDescriptor_90994c84dd9b32f5, []int{11}
 }
 
 func (m *DescribeTableResponse) XXX_Unmarshal(b []byte) error {
@@ -456,23 +581,21 @@ func (m *DescribeTableResponse) GetIsActive() bool {
 }
 
 type TableDesc struct {
-	Name                 string             `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	UseOnDemandIOMode    bool               `protobuf:"varint,2,opt,name=useOnDemandIOMode,proto3" json:"useOnDemandIOMode,omitempty"`
-	ProvisionedRead      int64              `protobuf:"varint,3,opt,name=provisionedRead,proto3" json:"provisionedRead,omitempty"`
-	ProvisionedWrite     int64              `protobuf:"varint,4,opt,name=provisionedWrite,proto3" json:"provisionedWrite,omitempty"`
-	Tags                 map[string]string  `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	WriteScale           *AutoScalingConfig `protobuf:"bytes,6,opt,name=writeScale,proto3" json:"writeScale,omitempty"`
-	ReadScale            *AutoScalingConfig `protobuf:"bytes,7,opt,name=readScale,proto3" json:"readScale,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
+	Name                 string            `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	UseOnDemandIOMode    bool              `protobuf:"varint,2,opt,name=useOnDemandIOMode,proto3" json:"useOnDemandIOMode,omitempty"`
+	ProvisionedRead      int64             `protobuf:"varint,3,opt,name=provisionedRead,proto3" json:"provisionedRead,omitempty"`
+	ProvisionedWrite     int64             `protobuf:"varint,4,opt,name=provisionedWrite,proto3" json:"provisionedWrite,omitempty"`
+	Tags                 map[string]string `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
 func (m *TableDesc) Reset()         { *m = TableDesc{} }
 func (m *TableDesc) String() string { return proto.CompactTextString(m) }
 func (*TableDesc) ProtoMessage()    {}
 func (*TableDesc) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{9}
+	return fileDescriptor_90994c84dd9b32f5, []int{12}
 }
 
 func (m *TableDesc) XXX_Unmarshal(b []byte) error {
@@ -528,107 +651,6 @@ func (m *TableDesc) GetTags() map[string]string {
 	return nil
 }
 
-func (m *TableDesc) GetWriteScale() *AutoScalingConfig {
-	if m != nil {
-		return m.WriteScale
-	}
-	return nil
-}
-
-func (m *TableDesc) GetReadScale() *AutoScalingConfig {
-	if m != nil {
-		return m.ReadScale
-	}
-	return nil
-}
-
-type AutoScalingConfig struct {
-	Enabled              bool     `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	RoleARN              string   `protobuf:"bytes,2,opt,name=roleARN,proto3" json:"roleARN,omitempty"`
-	MinCapacity          int64    `protobuf:"varint,3,opt,name=minCapacity,proto3" json:"minCapacity,omitempty"`
-	MaxCapacity          int64    `protobuf:"varint,4,opt,name=maxCapacity,proto3" json:"maxCapacity,omitempty"`
-	OutCoolDown          int64    `protobuf:"varint,5,opt,name=outCoolDown,proto3" json:"outCoolDown,omitempty"`
-	InCoolDown           int64    `protobuf:"varint,6,opt,name=inCoolDown,proto3" json:"inCoolDown,omitempty"`
-	TargetValue          float64  `protobuf:"fixed64,7,opt,name=targetValue,proto3" json:"targetValue,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *AutoScalingConfig) Reset()         { *m = AutoScalingConfig{} }
-func (m *AutoScalingConfig) String() string { return proto.CompactTextString(m) }
-func (*AutoScalingConfig) ProtoMessage()    {}
-func (*AutoScalingConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{10}
-}
-
-func (m *AutoScalingConfig) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_AutoScalingConfig.Unmarshal(m, b)
-}
-func (m *AutoScalingConfig) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_AutoScalingConfig.Marshal(b, m, deterministic)
-}
-func (m *AutoScalingConfig) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AutoScalingConfig.Merge(m, src)
-}
-func (m *AutoScalingConfig) XXX_Size() int {
-	return xxx_messageInfo_AutoScalingConfig.Size(m)
-}
-func (m *AutoScalingConfig) XXX_DiscardUnknown() {
-	xxx_messageInfo_AutoScalingConfig.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_AutoScalingConfig proto.InternalMessageInfo
-
-func (m *AutoScalingConfig) GetEnabled() bool {
-	if m != nil {
-		return m.Enabled
-	}
-	return false
-}
-
-func (m *AutoScalingConfig) GetRoleARN() string {
-	if m != nil {
-		return m.RoleARN
-	}
-	return ""
-}
-
-func (m *AutoScalingConfig) GetMinCapacity() int64 {
-	if m != nil {
-		return m.MinCapacity
-	}
-	return 0
-}
-
-func (m *AutoScalingConfig) GetMaxCapacity() int64 {
-	if m != nil {
-		return m.MaxCapacity
-	}
-	return 0
-}
-
-func (m *AutoScalingConfig) GetOutCoolDown() int64 {
-	if m != nil {
-		return m.OutCoolDown
-	}
-	return 0
-}
-
-func (m *AutoScalingConfig) GetInCoolDown() int64 {
-	if m != nil {
-		return m.InCoolDown
-	}
-	return 0
-}
-
-func (m *AutoScalingConfig) GetTargetValue() float64 {
-	if m != nil {
-		return m.TargetValue
-	}
-	return 0
-}
-
 type ListTablesResponse struct {
 	Tables               []string `protobuf:"bytes,1,rep,name=tables,proto3" json:"tables,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -640,7 +662,7 @@ func (m *ListTablesResponse) Reset()         { *m = ListTablesResponse{} }
 func (m *ListTablesResponse) String() string { return proto.CompactTextString(m) }
 func (*ListTablesResponse) ProtoMessage()    {}
 func (*ListTablesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{11}
+	return fileDescriptor_90994c84dd9b32f5, []int{13}
 }
 
 func (m *ListTablesResponse) XXX_Unmarshal(b []byte) error {
@@ -679,7 +701,7 @@ func (m *Chunks) Reset()         { *m = Chunks{} }
 func (m *Chunks) String() string { return proto.CompactTextString(m) }
 func (*Chunks) ProtoMessage()    {}
 func (*Chunks) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{12}
+	return fileDescriptor_90994c84dd9b32f5, []int{14}
 }
 
 func (m *Chunks) XXX_Unmarshal(b []byte) error {
@@ -708,25 +730,25 @@ func (m *Chunks) GetChunkInfo() []*ChunkInfo {
 }
 
 type ChunkInfo struct {
-	FingerPrint          int64    `protobuf:"varint,1,opt,name=fingerPrint,proto3" json:"fingerPrint,omitempty"`
-	UserID               string   `protobuf:"bytes,2,opt,name=userID,proto3" json:"userID,omitempty"`
-	From                 int64    `protobuf:"varint,3,opt,name=from,proto3" json:"from,omitempty"`
-	Through              int64    `protobuf:"varint,4,opt,name=through,proto3" json:"through,omitempty"`
-	Metric               []*Label `protobuf:"bytes,5,rep,name=metric,proto3" json:"metric,omitempty"`
-	ChecksumSet          bool     `protobuf:"varint,6,opt,name=checksumSet,proto3" json:"checksumSet,omitempty"`
-	Checksum             uint32   `protobuf:"varint,7,opt,name=checksum,proto3" json:"checksum,omitempty"`
-	Encoding             []byte   `protobuf:"bytes,8,opt,name=encoding,proto3" json:"encoding,omitempty"`
-	Encoded              []byte   `protobuf:"bytes,9,opt,name=encoded,proto3" json:"encoded,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	FingerPrint          int64     `protobuf:"varint,1,opt,name=fingerPrint,proto3" json:"fingerPrint,omitempty"`
+	UserID               string    `protobuf:"bytes,2,opt,name=userID,proto3" json:"userID,omitempty"`
+	From                 int64     `protobuf:"varint,3,opt,name=from,proto3" json:"from,omitempty"`
+	Through              int64     `protobuf:"varint,4,opt,name=through,proto3" json:"through,omitempty"`
+	Metric               []*Labels `protobuf:"bytes,5,rep,name=metric,proto3" json:"metric,omitempty"`
+	ChecksumSet          bool      `protobuf:"varint,6,opt,name=checksumSet,proto3" json:"checksumSet,omitempty"`
+	Checksum             uint32    `protobuf:"varint,7,opt,name=checksum,proto3" json:"checksum,omitempty"`
+	Encoding             []byte    `protobuf:"bytes,8,opt,name=encoding,proto3" json:"encoding,omitempty"`
+	Encoded              []byte    `protobuf:"bytes,9,opt,name=encoded,proto3" json:"encoded,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}  `json:"-"`
+	XXX_unrecognized     []byte    `json:"-"`
+	XXX_sizecache        int32     `json:"-"`
 }
 
 func (m *ChunkInfo) Reset()         { *m = ChunkInfo{} }
 func (m *ChunkInfo) String() string { return proto.CompactTextString(m) }
 func (*ChunkInfo) ProtoMessage()    {}
 func (*ChunkInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{13}
+	return fileDescriptor_90994c84dd9b32f5, []int{15}
 }
 
 func (m *ChunkInfo) XXX_Unmarshal(b []byte) error {
@@ -775,7 +797,7 @@ func (m *ChunkInfo) GetThrough() int64 {
 	return 0
 }
 
-func (m *ChunkInfo) GetMetric() []*Label {
+func (m *ChunkInfo) GetMetric() []*Labels {
 	if m != nil {
 		return m.Metric
 	}
@@ -823,7 +845,7 @@ func (m *Chunk) Reset()         { *m = Chunk{} }
 func (m *Chunk) String() string { return proto.CompactTextString(m) }
 func (*Chunk) ProtoMessage()    {}
 func (*Chunk) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{14}
+	return fileDescriptor_90994c84dd9b32f5, []int{16}
 }
 
 func (m *Chunk) XXX_Unmarshal(b []byte) error {
@@ -865,7 +887,7 @@ func (m *Chunk) GetTableName() string {
 	return ""
 }
 
-type Label struct {
+type Labels struct {
 	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Value                string   `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -873,39 +895,39 @@ type Label struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Label) Reset()         { *m = Label{} }
-func (m *Label) String() string { return proto.CompactTextString(m) }
-func (*Label) ProtoMessage()    {}
-func (*Label) Descriptor() ([]byte, []int) {
-	return fileDescriptor_90994c84dd9b32f5, []int{15}
+func (m *Labels) Reset()         { *m = Labels{} }
+func (m *Labels) String() string { return proto.CompactTextString(m) }
+func (*Labels) ProtoMessage()    {}
+func (*Labels) Descriptor() ([]byte, []int) {
+	return fileDescriptor_90994c84dd9b32f5, []int{17}
 }
 
-func (m *Label) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Label.Unmarshal(m, b)
+func (m *Labels) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Labels.Unmarshal(m, b)
 }
-func (m *Label) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Label.Marshal(b, m, deterministic)
+func (m *Labels) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Labels.Marshal(b, m, deterministic)
 }
-func (m *Label) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Label.Merge(m, src)
+func (m *Labels) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Labels.Merge(m, src)
 }
-func (m *Label) XXX_Size() int {
-	return xxx_messageInfo_Label.Size(m)
+func (m *Labels) XXX_Size() int {
+	return xxx_messageInfo_Labels.Size(m)
 }
-func (m *Label) XXX_DiscardUnknown() {
-	xxx_messageInfo_Label.DiscardUnknown(m)
+func (m *Labels) XXX_DiscardUnknown() {
+	xxx_messageInfo_Labels.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Label proto.InternalMessageInfo
+var xxx_messageInfo_Labels proto.InternalMessageInfo
 
-func (m *Label) GetName() string {
+func (m *Labels) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *Label) GetValue() string {
+func (m *Labels) GetValue() string {
 	if m != nil {
 		return m.Value
 	}
@@ -913,6 +935,9 @@ func (m *Label) GetValue() string {
 }
 
 func init() {
+	proto.RegisterType((*ChunksData)(nil), "grpc.ChunksData")
+	proto.RegisterType((*ChunksResponse)(nil), "grpc.ChunksResponse")
+	proto.RegisterType((*ChunkResponse)(nil), "grpc.ChunkResponse")
 	proto.RegisterType((*Nothing)(nil), "grpc.Nothing")
 	proto.RegisterType((*ChunkID)(nil), "grpc.ChunkID")
 	proto.RegisterType((*TableName)(nil), "grpc.TableName")
@@ -924,80 +949,75 @@ func init() {
 	proto.RegisterType((*DescribeTableResponse)(nil), "grpc.DescribeTableResponse")
 	proto.RegisterType((*TableDesc)(nil), "grpc.TableDesc")
 	proto.RegisterMapType((map[string]string)(nil), "grpc.TableDesc.TagsEntry")
-	proto.RegisterType((*AutoScalingConfig)(nil), "grpc.AutoScalingConfig")
 	proto.RegisterType((*ListTablesResponse)(nil), "grpc.ListTablesResponse")
 	proto.RegisterType((*Chunks)(nil), "grpc.Chunks")
 	proto.RegisterType((*ChunkInfo)(nil), "grpc.ChunkInfo")
 	proto.RegisterType((*Chunk)(nil), "grpc.Chunk")
-	proto.RegisterType((*Label)(nil), "grpc.Label")
+	proto.RegisterType((*Labels)(nil), "grpc.Labels")
 }
 
 func init() { proto.RegisterFile("gRPC.proto", fileDescriptor_90994c84dd9b32f5) }
 
 var fileDescriptor_90994c84dd9b32f5 = []byte{
-	// 990 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xdd, 0x6e, 0x23, 0x35,
-	0x14, 0x56, 0x9a, 0x34, 0xc9, 0x9c, 0xb4, 0xda, 0xae, 0xc5, 0x4f, 0x08, 0x08, 0x55, 0x53, 0xa4,
-	0xed, 0x42, 0x53, 0xa0, 0x68, 0x29, 0x42, 0x02, 0xa9, 0x24, 0x2b, 0x14, 0x69, 0xe9, 0x06, 0x77,
-	0x59, 0xb8, 0x75, 0x66, 0x4e, 0x26, 0x56, 0x13, 0x3b, 0x6b, 0x7b, 0xba, 0xed, 0x0d, 0x4f, 0xc0,
-	0x03, 0xf0, 0x70, 0xbc, 0x03, 0x0f, 0xc0, 0x0d, 0xb2, 0xc7, 0xf3, 0x93, 0x49, 0x77, 0x6f, 0xf6,
-	0x6e, 0xce, 0x77, 0x3e, 0xdb, 0xc7, 0xc7, 0xdf, 0x39, 0x67, 0x00, 0x12, 0x3a, 0x1d, 0x9d, 0xae,
-	0x95, 0x34, 0x92, 0xb4, 0x12, 0xb5, 0x8e, 0xc2, 0x00, 0x3a, 0x97, 0xd2, 0x2c, 0xb8, 0x48, 0xc2,
-	0x23, 0xe8, 0x8c, 0x16, 0xa9, 0xb8, 0x9e, 0x8c, 0x49, 0x1f, 0x3a, 0x91, 0xfb, 0x8c, 0xfb, 0x8d,
-	0xc3, 0xc6, 0x71, 0x40, 0x73, 0x33, 0x7c, 0x0c, 0xc1, 0x0b, 0x36, 0x5b, 0xe2, 0x25, 0x5b, 0x21,
-	0xf9, 0x04, 0x02, 0x93, 0x1b, 0x9e, 0x58, 0x02, 0xe1, 0x8f, 0x00, 0xbf, 0x2b, 0x6e, 0xf0, 0x27,
-	0x66, 0xa2, 0x05, 0xf9, 0x0a, 0x80, 0x8b, 0x18, 0x6f, 0x9f, 0x0a, 0xa3, 0xee, 0xfa, 0x8d, 0xc3,
-	0xe6, 0x71, 0xef, 0xec, 0xe0, 0xd4, 0xc6, 0x70, 0x3a, 0x29, 0x70, 0x5a, 0xe1, 0x84, 0x17, 0x10,
-	0x50, 0x64, 0x71, 0xb6, 0xfc, 0x53, 0x00, 0xc5, 0x44, 0x82, 0x2f, 0xd9, 0x32, 0xcd, 0xce, 0xda,
-	0xa3, 0x15, 0x84, 0xbc, 0x07, 0xbb, 0x37, 0xce, 0xb5, 0xe3, 0x5c, 0x99, 0x11, 0xfe, 0x09, 0x50,
-	0x6e, 0xfe, 0xf6, 0x70, 0xad, 0x77, 0xc1, 0xf4, 0xe2, 0x65, 0xb1, 0x4b, 0x40, 0x4b, 0xa0, 0x76,
-	0x7e, 0xf3, 0xcd, 0xe7, 0xb7, 0xaa, 0xe7, 0xff, 0xd3, 0xf0, 0x01, 0xfc, 0x9a, 0xe2, 0x3b, 0x06,
-	0xf0, 0x39, 0x1c, 0x94, 0xc7, 0x4d, 0x15, 0xce, 0xf9, 0xad, 0x0f, 0x63, 0x0b, 0x27, 0xc7, 0xf0,
-	0xa0, 0xc4, 0xae, 0x0c, 0x53, 0xc6, 0x87, 0x55, 0x87, 0xed, 0xb5, 0x5c, 0xa4, 0x4f, 0x5f, 0xa5,
-	0x6c, 0xd9, 0xdf, 0xcd, 0xae, 0x55, 0x22, 0x36, 0x26, 0xbe, 0x5a, 0xa5, 0x2e, 0xc8, 0x7e, 0xfb,
-	0xb0, 0x71, 0xdc, 0xa5, 0x25, 0x10, 0x2e, 0x81, 0xfc, 0xb6, 0x8e, 0x99, 0x41, 0x27, 0x09, 0x8a,
-	0xaf, 0x52, 0xd4, 0x86, 0x3c, 0x86, 0x4e, 0x94, 0x2a, 0x85, 0xc2, 0xb8, 0x3b, 0xf6, 0xce, 0x1e,
-	0x64, 0xcf, 0xec, 0x48, 0x63, 0xd4, 0x11, 0xcd, 0xfd, 0xe4, 0x0b, 0xe8, 0xe2, 0xed, 0x1a, 0x23,
-	0x83, 0xb1, 0xbb, 0xf1, 0x3d, 0xdc, 0x82, 0x10, 0xfe, 0x01, 0xef, 0x5b, 0x44, 0xf1, 0x59, 0x7e,
-	0x9e, 0x5e, 0x4b, 0xa1, 0x91, 0x1c, 0x41, 0x2b, 0x46, 0x1d, 0xbd, 0xe9, 0x34, 0xe7, 0x24, 0x03,
-	0xe8, 0x72, 0x7d, 0x11, 0x19, 0x7e, 0x93, 0x25, 0xb7, 0x4b, 0x0b, 0x3b, 0xfc, 0x6f, 0xc7, 0xab,
-	0xda, 0xf2, 0x09, 0x81, 0x96, 0x28, 0x1f, 0xc8, 0x7d, 0x93, 0x13, 0x78, 0x98, 0x6a, 0x7c, 0x2e,
-	0xc6, 0xb8, 0x62, 0x22, 0x9e, 0x3c, 0xff, 0x45, 0xc6, 0xf9, 0x36, 0xdb, 0x0e, 0x9b, 0xff, 0xb5,
-	0x92, 0x37, 0x5c, 0x73, 0x29, 0x30, 0xb6, 0x22, 0x76, 0x4f, 0xd5, 0xa4, 0x75, 0xd8, 0xbe, 0x6a,
-	0x05, 0x72, 0xe5, 0xe2, 0x9e, 0xaa, 0x49, 0xb7, 0x70, 0x32, 0x84, 0x96, 0x61, 0x89, 0xee, 0xef,
-	0xba, 0xda, 0xf9, 0xa8, 0x76, 0xcd, 0xd3, 0x17, 0x2c, 0xd1, 0x59, 0x11, 0x39, 0x1a, 0x39, 0x07,
-	0x78, 0x6d, 0xd7, 0x5d, 0x45, 0xcc, 0xbf, 0x5d, 0xef, 0xec, 0xc3, 0x6c, 0xd1, 0x45, 0x6a, 0xa4,
-	0x85, 0xb9, 0x48, 0x46, 0x52, 0xcc, 0x79, 0x42, 0x2b, 0x54, 0xf2, 0x04, 0x02, 0x85, 0x2c, 0xce,
-	0xd6, 0x75, 0xde, 0xbe, 0xae, 0x64, 0x0e, 0xce, 0x6d, 0x0e, 0x7d, 0x08, 0xe4, 0x00, 0x9a, 0xd7,
-	0x78, 0xe7, 0x53, 0x68, 0x3f, 0x37, 0x0b, 0x34, 0xf0, 0x05, 0xf2, 0xfd, 0xce, 0x77, 0x8d, 0xf0,
-	0xdf, 0x06, 0x3c, 0xdc, 0xda, 0xd9, 0xb6, 0x20, 0x14, 0xf6, 0x72, 0x59, 0x0b, 0xea, 0xd2, 0xdc,
-	0xb4, 0x1e, 0x25, 0x97, 0x78, 0x41, 0x2f, 0xfd, 0x5e, 0xb9, 0x49, 0x0e, 0xa1, 0xb7, 0xe2, 0x62,
-	0xc4, 0xd6, 0x2c, 0xe2, 0xe6, 0xce, 0xe7, 0xbc, 0x0a, 0x39, 0x06, 0xbb, 0x2d, 0x18, 0x2d, 0xcf,
-	0x28, 0x21, 0xcb, 0x90, 0xa9, 0x19, 0x49, 0xb9, 0x1c, 0xcb, 0xd7, 0xc2, 0x95, 0x44, 0x93, 0x56,
-	0x21, 0x5b, 0x33, 0x5c, 0x14, 0x84, 0xb6, 0x23, 0x54, 0x10, 0xbb, 0x83, 0x61, 0x2a, 0x41, 0x93,
-	0x55, 0xb2, 0xcd, 0x60, 0x83, 0x56, 0xa1, 0xf0, 0x04, 0xc8, 0x33, 0xae, 0x8d, 0x7b, 0x3b, 0x5d,
-	0xc8, 0xf8, 0x03, 0x68, 0xbb, 0xb2, 0xd2, 0xae, 0x3b, 0x06, 0xd4, 0x5b, 0xe1, 0x39, 0xb4, 0x5d,
-	0x5f, 0xd6, 0x64, 0x08, 0x41, 0xd6, 0x87, 0xc5, 0x5c, 0xfa, 0x16, 0xea, 0xd5, 0x3e, 0xca, 0x61,
-	0x5a, 0x32, 0xc2, 0xbf, 0x76, 0x20, 0x28, 0x1c, 0x36, 0xac, 0x39, 0x17, 0x09, 0xaa, 0xa9, 0xe2,
-	0xbe, 0x34, 0x9b, 0xb4, 0x0a, 0xd9, 0x00, 0x52, 0x8d, 0x6a, 0x32, 0xf6, 0x79, 0xf5, 0x96, 0x2d,
-	0x88, 0xb9, 0x92, 0x2b, 0x9f, 0x4f, 0xf7, 0x6d, 0x1f, 0xc1, 0x2c, 0x94, 0x4c, 0x93, 0x85, 0x4f,
-	0x62, 0x6e, 0x92, 0x23, 0x68, 0xaf, 0xd0, 0x28, 0x1e, 0x79, 0xa1, 0xf6, 0xb2, 0x08, 0x9f, 0xb1,
-	0x19, 0x2e, 0xa9, 0x77, 0xd9, 0x60, 0xa2, 0x05, 0x46, 0xd7, 0x3a, 0x5d, 0x5d, 0xa1, 0xf1, 0x9d,
-	0xa5, 0x0a, 0xd9, 0x7a, 0xcd, 0x4d, 0x97, 0xc2, 0x7d, 0x5a, 0xd8, 0xd6, 0x87, 0x22, 0x92, 0x31,
-	0x17, 0x49, 0xbf, 0xeb, 0x7a, 0x56, 0x61, 0x67, 0xba, 0x89, 0x64, 0x8c, 0x71, 0x3f, 0x70, 0xae,
-	0xdc, 0x0c, 0x27, 0xb0, 0xeb, 0xb2, 0x61, 0xc5, 0x39, 0x4b, 0xe7, 0x7e, 0x88, 0xd8, 0xcf, 0x5c,
-	0xae, 0x3b, 0xa5, 0x5c, 0x37, 0x5a, 0x75, 0xb3, 0x3e, 0xda, 0xbe, 0x86, 0x5d, 0x77, 0x9f, 0x7b,
-	0x7b, 0xc5, 0xbd, 0x4a, 0x3f, 0xfb, 0xbb, 0x05, 0x6e, 0xe2, 0x92, 0x21, 0x80, 0x1b, 0x69, 0x59,
-	0x51, 0xfb, 0x11, 0x58, 0x0e, 0xca, 0xc1, 0x7e, 0x86, 0xf8, 0xa9, 0x4c, 0xbe, 0x04, 0x70, 0xc3,
-	0x63, 0xca, 0x12, 0xd4, 0xa4, 0x3a, 0x31, 0x1d, 0x3c, 0xf0, 0x02, 0x28, 0x27, 0xe5, 0x23, 0x08,
-	0xa6, 0xa9, 0xf1, 0x8a, 0xe9, 0x55, 0xe4, 0x51, 0xdf, 0xf9, 0x11, 0x04, 0x3f, 0x63, 0x4e, 0xdc,
-	0xab, 0x10, 0xf5, 0x60, 0xc3, 0x22, 0x27, 0xb0, 0x37, 0xc6, 0x25, 0x1a, 0xf4, 0xf6, 0x7e, 0x55,
-	0x73, 0xe3, 0xfa, 0xb6, 0x4f, 0x00, 0x4a, 0x71, 0x93, 0x4d, 0xe7, 0xa0, 0xef, 0xc5, 0xb0, 0xad,
-	0xfe, 0x21, 0xf4, 0x46, 0x0a, 0xf3, 0x59, 0x42, 0xea, 0x5d, 0xbc, 0x7e, 0xca, 0x10, 0x7a, 0x59,
-	0x4c, 0xdb, 0x74, 0xfb, 0x42, 0x75, 0xfa, 0x0f, 0xb0, 0xbf, 0x31, 0x3b, 0xb6, 0x17, 0x7c, 0x9c,
-	0x01, 0xf7, 0x4f, 0x98, 0x6f, 0xa1, 0x57, 0x19, 0x74, 0xc4, 0xdf, 0x62, 0x7b, 0xf6, 0xd5, 0x8f,
-	0xfd, 0x0c, 0x5a, 0x57, 0x46, 0xae, 0xeb, 0x59, 0xd8, 0x34, 0x67, 0x6d, 0xf7, 0x43, 0xf6, 0xcd,
-	0xff, 0x01, 0x00, 0x00, 0xff, 0xff, 0x24, 0x37, 0x91, 0x9f, 0x9e, 0x09, 0x00, 0x00,
+	// 924 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0x5f, 0x6f, 0x1b, 0x45,
+	0x10, 0xd7, 0xd9, 0x8e, 0xed, 0x1b, 0xdb, 0x24, 0x2c, 0x05, 0x1d, 0x06, 0x21, 0xeb, 0xd2, 0x07,
+	0x97, 0x26, 0xa1, 0x0d, 0x82, 0x22, 0xa4, 0x22, 0x95, 0xb8, 0x42, 0x96, 0x4a, 0x6b, 0x36, 0xa5,
+	0xf0, 0x86, 0xd6, 0x77, 0xe3, 0xbb, 0x53, 0xec, 0x3b, 0x77, 0x77, 0x2f, 0x4a, 0x5f, 0xf8, 0x02,
+	0x88, 0x8f, 0xc2, 0x37, 0xe2, 0xc3, 0xa0, 0xfd, 0x73, 0x7f, 0x7c, 0x4e, 0x78, 0xe9, 0xdb, 0xcd,
+	0x6f, 0x66, 0x77, 0x66, 0x76, 0x7e, 0xf3, 0xb3, 0x01, 0x22, 0xba, 0xb8, 0x38, 0xdb, 0xf2, 0x4c,
+	0x66, 0xa4, 0x13, 0xf1, 0x6d, 0xe0, 0x3f, 0x06, 0xb8, 0x88, 0xf3, 0xf4, 0x4a, 0xcc, 0x98, 0x64,
+	0xe4, 0x18, 0xba, 0x81, 0xb6, 0x3c, 0x67, 0xd2, 0x9e, 0x0e, 0xce, 0x07, 0x67, 0x2a, 0xe8, 0x4c,
+	0x47, 0x50, 0xeb, 0xf2, 0x9f, 0xc2, 0x07, 0xe6, 0x08, 0x45, 0xb1, 0xcd, 0x52, 0x81, 0xe4, 0x61,
+	0xe3, 0xd8, 0x47, 0xf5, 0x63, 0x36, 0xa8, 0x76, 0x7c, 0xb4, 0xe3, 0x20, 0x63, 0xe8, 0x07, 0x31,
+	0x06, 0x57, 0x22, 0xdf, 0x78, 0xce, 0xc4, 0x99, 0x8e, 0x68, 0x69, 0x93, 0x23, 0x68, 0x2f, 0xf3,
+	0x95, 0xd7, 0x9a, 0x38, 0xd3, 0x21, 0x55, 0x9f, 0xbe, 0x0b, 0xbd, 0x97, 0x99, 0x8c, 0x93, 0x34,
+	0xf2, 0x8f, 0xa1, 0xa7, 0x6f, 0x9a, 0xcf, 0x88, 0x07, 0x3d, 0x7d, 0xfd, 0x3c, 0xd4, 0x57, 0xb8,
+	0xb4, 0x30, 0xfd, 0x07, 0xe0, 0xbe, 0x66, 0xcb, 0x35, 0xbe, 0x64, 0x1b, 0x24, 0x9f, 0x83, 0x2b,
+	0x0b, 0xc3, 0x06, 0x56, 0x80, 0xff, 0x03, 0xc0, 0x6f, 0x3c, 0x91, 0xf8, 0x23, 0x93, 0x41, 0x4c,
+	0x1e, 0x01, 0x24, 0x69, 0x88, 0x37, 0xcf, 0x53, 0xc9, 0xdf, 0xd9, 0xc6, 0x8e, 0x4c, 0x63, 0xf3,
+	0x12, 0xa7, 0xb5, 0x18, 0xff, 0x19, 0xb8, 0x14, 0x59, 0x68, 0x8e, 0x7f, 0x01, 0xc0, 0x59, 0x1a,
+	0xe1, 0x1b, 0xb6, 0xce, 0x4d, 0xae, 0x21, 0xad, 0x21, 0xe4, 0x1e, 0x1c, 0x5c, 0x6b, 0x97, 0xe9,
+	0xcd, 0x18, 0xfe, 0x9f, 0x00, 0xd5, 0xe5, 0xff, 0x5f, 0xae, 0xf2, 0xc6, 0x4c, 0xc4, 0x6f, 0xca,
+	0x5b, 0x5c, 0x5a, 0x01, 0x8d, 0xfc, 0xed, 0xbb, 0xf3, 0x77, 0xea, 0xf9, 0xff, 0x75, 0x6c, 0x01,
+	0xbf, 0xe4, 0xf8, 0x9e, 0x05, 0x7c, 0x09, 0x47, 0x55, 0xba, 0x05, 0xc7, 0x55, 0x72, 0x63, 0xcb,
+	0xd8, 0xc3, 0xc9, 0x14, 0x0e, 0x2b, 0xec, 0x52, 0x32, 0x2e, 0x6d, 0x59, 0x4d, 0x58, 0xb5, 0xa5,
+	0x2b, 0x7d, 0xfe, 0x36, 0x67, 0x6b, 0xef, 0xc0, 0xb4, 0x55, 0x21, 0xaa, 0xa6, 0x64, 0xb3, 0xc9,
+	0x75, 0x91, 0x5e, 0x77, 0xe2, 0x4c, 0xfb, 0xb4, 0x02, 0xfc, 0x35, 0x90, 0x5f, 0xb7, 0x21, 0x93,
+	0xa8, 0x29, 0x41, 0xf1, 0x6d, 0x8e, 0x42, 0x92, 0x07, 0xd0, 0x0b, 0x72, 0xce, 0x31, 0x95, 0xba,
+	0xc7, 0xc1, 0xf9, 0xa1, 0x19, 0xb3, 0x0e, 0x9a, 0xa1, 0x08, 0x68, 0xe1, 0x27, 0x0f, 0xa1, 0x8f,
+	0x37, 0x5b, 0x0c, 0x24, 0x86, 0xba, 0xe3, 0x5b, 0x62, 0xcb, 0x00, 0xff, 0x77, 0xf8, 0x58, 0x21,
+	0x3c, 0x59, 0x16, 0xf9, 0x2c, 0xe3, 0x8f, 0xa1, 0x13, 0xa2, 0x08, 0xee, 0xca, 0xa6, 0x9d, 0x6a,
+	0x2d, 0x12, 0xf1, 0x2c, 0x90, 0xc9, 0xb5, 0x79, 0xdc, 0x3e, 0x2d, 0x6d, 0xff, 0xaf, 0x96, 0x65,
+	0xb5, 0x8a, 0x27, 0x04, 0x3a, 0x69, 0x35, 0x20, 0xfd, 0x4d, 0x4e, 0xe0, 0xc3, 0x5c, 0xe0, 0xab,
+	0x74, 0x86, 0x1b, 0x96, 0x86, 0xf3, 0x57, 0x3f, 0x67, 0x61, 0x71, 0xcd, 0xbe, 0x43, 0xbd, 0xff,
+	0x96, 0x67, 0xd7, 0x89, 0x48, 0xb2, 0x14, 0x43, 0x45, 0x62, 0x3d, 0xaa, 0x36, 0x6d, 0xc2, 0x6a,
+	0xaa, 0x35, 0x48, 0xaf, 0x8b, 0x1e, 0x55, 0x9b, 0xee, 0xe1, 0xe4, 0x14, 0x3a, 0x92, 0x45, 0xc2,
+	0x3b, 0xd0, 0xbb, 0xf3, 0x69, 0xa3, 0xcd, 0xb3, 0xd7, 0x2c, 0x12, 0x66, 0x89, 0x74, 0xd8, 0xf8,
+	0x89, 0xea, 0xc9, 0x42, 0x6a, 0xf1, 0xaf, 0xf0, 0x9d, 0x6d, 0x49, 0x7d, 0xee, 0x2e, 0x8c, 0x6b,
+	0x09, 0xfb, 0x7d, 0xeb, 0x3b, 0xc7, 0x3f, 0x01, 0xf2, 0x22, 0x11, 0x52, 0xdf, 0x5c, 0x89, 0xd2,
+	0x27, 0xd0, 0xd5, 0x43, 0x37, 0xa2, 0xe4, 0x52, 0x6b, 0xf9, 0x4f, 0xa0, 0x6b, 0xe4, 0x8b, 0x9c,
+	0x82, 0x6b, 0x54, 0x22, 0x5d, 0x65, 0x76, 0xc1, 0x0f, 0x6b, 0xca, 0xa5, 0x60, 0x5a, 0x45, 0xf8,
+	0x7f, 0xb7, 0xc0, 0x2d, 0x1d, 0x64, 0x02, 0x83, 0x55, 0x92, 0x46, 0xc8, 0x17, 0x3c, 0xb1, 0xc4,
+	0x69, 0xd3, 0x3a, 0xa4, 0x0a, 0xc8, 0x05, 0xf2, 0xf9, 0xcc, 0x56, 0x6c, 0x2d, 0x35, 0xae, 0x15,
+	0xcf, 0x36, 0xf6, 0x85, 0xf5, 0xb7, 0xd2, 0x2f, 0x19, 0xf3, 0x2c, 0x8f, 0x62, 0xfb, 0x9a, 0x85,
+	0x49, 0xee, 0x43, 0x77, 0x83, 0x92, 0x27, 0x81, 0x7d, 0xc6, 0xa1, 0xa9, 0xf0, 0x05, 0x5b, 0xe2,
+	0x5a, 0x50, 0xeb, 0x53, 0xd5, 0x14, 0x9a, 0x79, 0x89, 0xd2, 0x12, 0xbf, 0x0e, 0xed, 0xa8, 0x6c,
+	0xaf, 0xa1, 0xb2, 0x63, 0xe8, 0x63, 0x1a, 0x64, 0x61, 0x92, 0x46, 0x5e, 0x5f, 0xaf, 0x54, 0x69,
+	0xab, 0xca, 0xf4, 0x37, 0x86, 0x9e, 0xab, 0x5d, 0x85, 0xe9, 0xcf, 0xe1, 0x40, 0x3f, 0x47, 0x21,
+	0xd2, 0x4e, 0x29, 0xd2, 0xc5, 0xf4, 0x5a, 0xd5, 0xf4, 0x76, 0x94, 0xa4, 0xdd, 0x54, 0xde, 0x73,
+	0xe8, 0x9a, 0x86, 0x6e, 0xe5, 0xf2, 0xad, 0x93, 0x3f, 0xff, 0xa7, 0x03, 0xa0, 0x9e, 0xe2, 0x0f,
+	0x21, 0x33, 0xae, 0xc8, 0x06, 0x5a, 0x78, 0x0d, 0xf5, 0xac, 0x50, 0x57, 0x72, 0x3e, 0x1e, 0x19,
+	0xc4, 0xfe, 0x76, 0x90, 0xc7, 0x00, 0x5a, 0xe2, 0x16, 0x2c, 0x42, 0x41, 0xea, 0xba, 0xae, 0xe1,
+	0xb1, 0x25, 0x42, 0xa9, 0xe7, 0x8f, 0x1c, 0x72, 0x02, 0xee, 0x22, 0x97, 0x96, 0x3b, 0x47, 0x35,
+	0xa2, 0xe8, 0xdf, 0xce, 0x66, 0x82, 0xaf, 0xc0, 0xfd, 0x09, 0x8b, 0xe8, 0x61, 0x3d, 0x7a, 0x7c,
+	0xaf, 0x6e, 0x95, 0x7c, 0x3d, 0x81, 0xe1, 0x0c, 0xd7, 0x28, 0xd1, 0x9e, 0x19, 0xd5, 0xa9, 0x38,
+	0x6b, 0x5e, 0xff, 0x0d, 0x40, 0xc5, 0x79, 0xb2, 0xeb, 0x1c, 0x7b, 0x96, 0x23, 0xfb, 0x4b, 0x71,
+	0x0a, 0x83, 0x0b, 0x8e, 0x85, 0x00, 0x92, 0xa6, 0xf4, 0x34, 0xb3, 0x9c, 0xc2, 0xc0, 0xd4, 0xb4,
+	0x1f, 0xae, 0xe6, 0xd6, 0x0c, 0x7f, 0x0a, 0xa3, 0x1d, 0xc1, 0xdb, 0x3f, 0xf0, 0x99, 0x01, 0x6e,
+	0x97, 0xc5, 0x6f, 0x61, 0x50, 0x53, 0x67, 0x62, 0xbb, 0xd8, 0x17, 0xec, 0x66, 0xda, 0xfb, 0xd0,
+	0xb9, 0x94, 0xd9, 0xb6, 0xf9, 0x0a, 0xbb, 0xe6, 0xb2, 0xab, 0xff, 0xf6, 0x7c, 0xfd, 0x5f, 0x00,
+	0x00, 0x00, 0xff, 0xff, 0x8a, 0x27, 0x10, 0x81, 0x04, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1008,16 +1028,16 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// GrpcClient is the client API for Grpc service.
+// GrpcStoreClient is the client API for GrpcStore service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type GrpcClient interface {
+type GrpcStoreClient interface {
 	//index-client
 	BatchWrite(ctx context.Context, in *WriteBatch, opts ...grpc.CallOption) (*Nothing, error)
-	QueryPages(ctx context.Context, in *IndexQuery, opts ...grpc.CallOption) (*ReadBatch, error)
+	QueryPages(ctx context.Context, in *IndexQuery, opts ...grpc.CallOption) (GrpcStore_QueryPagesClient, error)
 	//storage-client
-	PutChunks(ctx context.Context, in *Chunk, opts ...grpc.CallOption) (*Nothing, error)
-	GetChunks(ctx context.Context, in *Chunks, opts ...grpc.CallOption) (*Chunks, error)
+	PutChunks(ctx context.Context, in *ChunksData, opts ...grpc.CallOption) (*Nothing, error)
+	GetChunks(ctx context.Context, in *Chunks, opts ...grpc.CallOption) (*ChunksResponse, error)
 	DeleteChunks(ctx context.Context, in *ChunkID, opts ...grpc.CallOption) (*Nothing, error)
 	//table-client
 	ListTables(ctx context.Context, in *Nothing, opts ...grpc.CallOption) (*ListTablesResponse, error)
@@ -1029,121 +1049,144 @@ type GrpcClient interface {
 	Stop(ctx context.Context, in *Nothing, opts ...grpc.CallOption) (*Nothing, error)
 }
 
-type grpcClient struct {
+type grpcStoreClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewGrpcClient(cc *grpc.ClientConn) GrpcClient {
-	return &grpcClient{cc}
+func NewGrpcStoreClient(cc *grpc.ClientConn) GrpcStoreClient {
+	return &grpcStoreClient{cc}
 }
 
-func (c *grpcClient) BatchWrite(ctx context.Context, in *WriteBatch, opts ...grpc.CallOption) (*Nothing, error) {
+func (c *grpcStoreClient) BatchWrite(ctx context.Context, in *WriteBatch, opts ...grpc.CallOption) (*Nothing, error) {
 	out := new(Nothing)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/BatchWrite", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/BatchWrite", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) QueryPages(ctx context.Context, in *IndexQuery, opts ...grpc.CallOption) (*ReadBatch, error) {
-	out := new(ReadBatch)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/QueryPages", in, out, opts...)
+func (c *grpcStoreClient) QueryPages(ctx context.Context, in *IndexQuery, opts ...grpc.CallOption) (GrpcStore_QueryPagesClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_GrpcStore_serviceDesc.Streams[0], "/grpc.grpc_store/QueryPages", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpcStoreQueryPagesClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
 
-func (c *grpcClient) PutChunks(ctx context.Context, in *Chunk, opts ...grpc.CallOption) (*Nothing, error) {
+type GrpcStore_QueryPagesClient interface {
+	Recv() (*ReadBatch, error)
+	grpc.ClientStream
+}
+
+type grpcStoreQueryPagesClient struct {
+	grpc.ClientStream
+}
+
+func (x *grpcStoreQueryPagesClient) Recv() (*ReadBatch, error) {
+	m := new(ReadBatch)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *grpcStoreClient) PutChunks(ctx context.Context, in *ChunksData, opts ...grpc.CallOption) (*Nothing, error) {
 	out := new(Nothing)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/PutChunks", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/PutChunks", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) GetChunks(ctx context.Context, in *Chunks, opts ...grpc.CallOption) (*Chunks, error) {
-	out := new(Chunks)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/GetChunks", in, out, opts...)
+func (c *grpcStoreClient) GetChunks(ctx context.Context, in *Chunks, opts ...grpc.CallOption) (*ChunksResponse, error) {
+	out := new(ChunksResponse)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/GetChunks", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) DeleteChunks(ctx context.Context, in *ChunkID, opts ...grpc.CallOption) (*Nothing, error) {
+func (c *grpcStoreClient) DeleteChunks(ctx context.Context, in *ChunkID, opts ...grpc.CallOption) (*Nothing, error) {
 	out := new(Nothing)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/DeleteChunks", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/DeleteChunks", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) ListTables(ctx context.Context, in *Nothing, opts ...grpc.CallOption) (*ListTablesResponse, error) {
+func (c *grpcStoreClient) ListTables(ctx context.Context, in *Nothing, opts ...grpc.CallOption) (*ListTablesResponse, error) {
 	out := new(ListTablesResponse)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/ListTables", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/ListTables", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) CreateTable(ctx context.Context, in *TableDesc, opts ...grpc.CallOption) (*Nothing, error) {
+func (c *grpcStoreClient) CreateTable(ctx context.Context, in *TableDesc, opts ...grpc.CallOption) (*Nothing, error) {
 	out := new(Nothing)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/CreateTable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/CreateTable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) DeleteTable(ctx context.Context, in *TableName, opts ...grpc.CallOption) (*Nothing, error) {
+func (c *grpcStoreClient) DeleteTable(ctx context.Context, in *TableName, opts ...grpc.CallOption) (*Nothing, error) {
 	out := new(Nothing)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/DeleteTable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/DeleteTable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) DescribeTable(ctx context.Context, in *TableName, opts ...grpc.CallOption) (*DescribeTableResponse, error) {
+func (c *grpcStoreClient) DescribeTable(ctx context.Context, in *TableName, opts ...grpc.CallOption) (*DescribeTableResponse, error) {
 	out := new(DescribeTableResponse)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/DescribeTable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/DescribeTable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) UpdateTable(ctx context.Context, in *UpdateTableRequest, opts ...grpc.CallOption) (*Nothing, error) {
+func (c *grpcStoreClient) UpdateTable(ctx context.Context, in *UpdateTableRequest, opts ...grpc.CallOption) (*Nothing, error) {
 	out := new(Nothing)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/UpdateTable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/UpdateTable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *grpcClient) Stop(ctx context.Context, in *Nothing, opts ...grpc.CallOption) (*Nothing, error) {
+func (c *grpcStoreClient) Stop(ctx context.Context, in *Nothing, opts ...grpc.CallOption) (*Nothing, error) {
 	out := new(Nothing)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/Stop", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc_store/Stop", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GrpcServer is the server API for Grpc service.
-type GrpcServer interface {
+// GrpcStoreServer is the server API for GrpcStore service.
+type GrpcStoreServer interface {
 	//index-client
 	BatchWrite(context.Context, *WriteBatch) (*Nothing, error)
-	QueryPages(context.Context, *IndexQuery) (*ReadBatch, error)
+	QueryPages(*IndexQuery, GrpcStore_QueryPagesServer) error
 	//storage-client
-	PutChunks(context.Context, *Chunk) (*Nothing, error)
-	GetChunks(context.Context, *Chunks) (*Chunks, error)
+	PutChunks(context.Context, *ChunksData) (*Nothing, error)
+	GetChunks(context.Context, *Chunks) (*ChunksResponse, error)
 	DeleteChunks(context.Context, *ChunkID) (*Nothing, error)
 	//table-client
 	ListTables(context.Context, *Nothing) (*ListTablesResponse, error)
@@ -1155,295 +1198,300 @@ type GrpcServer interface {
 	Stop(context.Context, *Nothing) (*Nothing, error)
 }
 
-// UnimplementedGrpcServer can be embedded to have forward compatible implementations.
-type UnimplementedGrpcServer struct {
+// UnimplementedGrpcStoreServer can be embedded to have forward compatible implementations.
+type UnimplementedGrpcStoreServer struct {
 }
 
-func (*UnimplementedGrpcServer) BatchWrite(ctx context.Context, req *WriteBatch) (*Nothing, error) {
+func (*UnimplementedGrpcStoreServer) BatchWrite(ctx context.Context, req *WriteBatch) (*Nothing, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchWrite not implemented")
 }
-func (*UnimplementedGrpcServer) QueryPages(ctx context.Context, req *IndexQuery) (*ReadBatch, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryPages not implemented")
+func (*UnimplementedGrpcStoreServer) QueryPages(req *IndexQuery, srv GrpcStore_QueryPagesServer) error {
+	return status.Errorf(codes.Unimplemented, "method QueryPages not implemented")
 }
-func (*UnimplementedGrpcServer) PutChunks(ctx context.Context, req *Chunk) (*Nothing, error) {
+func (*UnimplementedGrpcStoreServer) PutChunks(ctx context.Context, req *ChunksData) (*Nothing, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PutChunks not implemented")
 }
-func (*UnimplementedGrpcServer) GetChunks(ctx context.Context, req *Chunks) (*Chunks, error) {
+func (*UnimplementedGrpcStoreServer) GetChunks(ctx context.Context, req *Chunks) (*ChunksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetChunks not implemented")
 }
-func (*UnimplementedGrpcServer) DeleteChunks(ctx context.Context, req *ChunkID) (*Nothing, error) {
+func (*UnimplementedGrpcStoreServer) DeleteChunks(ctx context.Context, req *ChunkID) (*Nothing, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteChunks not implemented")
 }
-func (*UnimplementedGrpcServer) ListTables(ctx context.Context, req *Nothing) (*ListTablesResponse, error) {
+func (*UnimplementedGrpcStoreServer) ListTables(ctx context.Context, req *Nothing) (*ListTablesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTables not implemented")
 }
-func (*UnimplementedGrpcServer) CreateTable(ctx context.Context, req *TableDesc) (*Nothing, error) {
+func (*UnimplementedGrpcStoreServer) CreateTable(ctx context.Context, req *TableDesc) (*Nothing, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateTable not implemented")
 }
-func (*UnimplementedGrpcServer) DeleteTable(ctx context.Context, req *TableName) (*Nothing, error) {
+func (*UnimplementedGrpcStoreServer) DeleteTable(ctx context.Context, req *TableName) (*Nothing, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTable not implemented")
 }
-func (*UnimplementedGrpcServer) DescribeTable(ctx context.Context, req *TableName) (*DescribeTableResponse, error) {
+func (*UnimplementedGrpcStoreServer) DescribeTable(ctx context.Context, req *TableName) (*DescribeTableResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DescribeTable not implemented")
 }
-func (*UnimplementedGrpcServer) UpdateTable(ctx context.Context, req *UpdateTableRequest) (*Nothing, error) {
+func (*UnimplementedGrpcStoreServer) UpdateTable(ctx context.Context, req *UpdateTableRequest) (*Nothing, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTable not implemented")
 }
-func (*UnimplementedGrpcServer) Stop(ctx context.Context, req *Nothing) (*Nothing, error) {
+func (*UnimplementedGrpcStoreServer) Stop(ctx context.Context, req *Nothing) (*Nothing, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Stop not implemented")
 }
 
-func RegisterGrpcServer(s *grpc.Server, srv GrpcServer) {
-	s.RegisterService(&_Grpc_serviceDesc, srv)
+func RegisterGrpcStoreServer(s *grpc.Server, srv GrpcStoreServer) {
+	s.RegisterService(&_GrpcStore_serviceDesc, srv)
 }
 
-func _Grpc_BatchWrite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_BatchWrite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(WriteBatch)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).BatchWrite(ctx, in)
+		return srv.(GrpcStoreServer).BatchWrite(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/BatchWrite",
+		FullMethod: "/grpc.grpc_store/BatchWrite",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).BatchWrite(ctx, req.(*WriteBatch))
+		return srv.(GrpcStoreServer).BatchWrite(ctx, req.(*WriteBatch))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_QueryPages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IndexQuery)
+func _GrpcStore_QueryPages_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(IndexQuery)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(GrpcStoreServer).QueryPages(m, &grpcStoreQueryPagesServer{stream})
+}
+
+type GrpcStore_QueryPagesServer interface {
+	Send(*ReadBatch) error
+	grpc.ServerStream
+}
+
+type grpcStoreQueryPagesServer struct {
+	grpc.ServerStream
+}
+
+func (x *grpcStoreQueryPagesServer) Send(m *ReadBatch) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _GrpcStore_PutChunks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChunksData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).QueryPages(ctx, in)
+		return srv.(GrpcStoreServer).PutChunks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/QueryPages",
+		FullMethod: "/grpc.grpc_store/PutChunks",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).QueryPages(ctx, req.(*IndexQuery))
+		return srv.(GrpcStoreServer).PutChunks(ctx, req.(*ChunksData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_PutChunks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Chunk)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GrpcServer).PutChunks(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/grpc.grpc/PutChunks",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).PutChunks(ctx, req.(*Chunk))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Grpc_GetChunks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_GetChunks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Chunks)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).GetChunks(ctx, in)
+		return srv.(GrpcStoreServer).GetChunks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/GetChunks",
+		FullMethod: "/grpc.grpc_store/GetChunks",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).GetChunks(ctx, req.(*Chunks))
+		return srv.(GrpcStoreServer).GetChunks(ctx, req.(*Chunks))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_DeleteChunks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_DeleteChunks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ChunkID)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).DeleteChunks(ctx, in)
+		return srv.(GrpcStoreServer).DeleteChunks(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/DeleteChunks",
+		FullMethod: "/grpc.grpc_store/DeleteChunks",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).DeleteChunks(ctx, req.(*ChunkID))
+		return srv.(GrpcStoreServer).DeleteChunks(ctx, req.(*ChunkID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_ListTables_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_ListTables_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Nothing)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).ListTables(ctx, in)
+		return srv.(GrpcStoreServer).ListTables(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/ListTables",
+		FullMethod: "/grpc.grpc_store/ListTables",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).ListTables(ctx, req.(*Nothing))
+		return srv.(GrpcStoreServer).ListTables(ctx, req.(*Nothing))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_CreateTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_CreateTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TableDesc)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).CreateTable(ctx, in)
+		return srv.(GrpcStoreServer).CreateTable(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/CreateTable",
+		FullMethod: "/grpc.grpc_store/CreateTable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).CreateTable(ctx, req.(*TableDesc))
+		return srv.(GrpcStoreServer).CreateTable(ctx, req.(*TableDesc))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_DeleteTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_DeleteTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TableName)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).DeleteTable(ctx, in)
+		return srv.(GrpcStoreServer).DeleteTable(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/DeleteTable",
+		FullMethod: "/grpc.grpc_store/DeleteTable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).DeleteTable(ctx, req.(*TableName))
+		return srv.(GrpcStoreServer).DeleteTable(ctx, req.(*TableName))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_DescribeTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_DescribeTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TableName)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).DescribeTable(ctx, in)
+		return srv.(GrpcStoreServer).DescribeTable(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/DescribeTable",
+		FullMethod: "/grpc.grpc_store/DescribeTable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).DescribeTable(ctx, req.(*TableName))
+		return srv.(GrpcStoreServer).DescribeTable(ctx, req.(*TableName))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_UpdateTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_UpdateTable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateTableRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).UpdateTable(ctx, in)
+		return srv.(GrpcStoreServer).UpdateTable(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/UpdateTable",
+		FullMethod: "/grpc.grpc_store/UpdateTable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).UpdateTable(ctx, req.(*UpdateTableRequest))
+		return srv.(GrpcStoreServer).UpdateTable(ctx, req.(*UpdateTableRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Grpc_Stop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _GrpcStore_Stop_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Nothing)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).Stop(ctx, in)
+		return srv.(GrpcStoreServer).Stop(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/Stop",
+		FullMethod: "/grpc.grpc_store/Stop",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).Stop(ctx, req.(*Nothing))
+		return srv.(GrpcStoreServer).Stop(ctx, req.(*Nothing))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Grpc_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "grpc.grpc",
-	HandlerType: (*GrpcServer)(nil),
+var _GrpcStore_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc.grpc_store",
+	HandlerType: (*GrpcStoreServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "BatchWrite",
-			Handler:    _Grpc_BatchWrite_Handler,
-		},
-		{
-			MethodName: "QueryPages",
-			Handler:    _Grpc_QueryPages_Handler,
+			Handler:    _GrpcStore_BatchWrite_Handler,
 		},
 		{
 			MethodName: "PutChunks",
-			Handler:    _Grpc_PutChunks_Handler,
+			Handler:    _GrpcStore_PutChunks_Handler,
 		},
 		{
 			MethodName: "GetChunks",
-			Handler:    _Grpc_GetChunks_Handler,
+			Handler:    _GrpcStore_GetChunks_Handler,
 		},
 		{
 			MethodName: "DeleteChunks",
-			Handler:    _Grpc_DeleteChunks_Handler,
+			Handler:    _GrpcStore_DeleteChunks_Handler,
 		},
 		{
 			MethodName: "ListTables",
-			Handler:    _Grpc_ListTables_Handler,
+			Handler:    _GrpcStore_ListTables_Handler,
 		},
 		{
 			MethodName: "CreateTable",
-			Handler:    _Grpc_CreateTable_Handler,
+			Handler:    _GrpcStore_CreateTable_Handler,
 		},
 		{
 			MethodName: "DeleteTable",
-			Handler:    _Grpc_DeleteTable_Handler,
+			Handler:    _GrpcStore_DeleteTable_Handler,
 		},
 		{
 			MethodName: "DescribeTable",
-			Handler:    _Grpc_DescribeTable_Handler,
+			Handler:    _GrpcStore_DescribeTable_Handler,
 		},
 		{
 			MethodName: "UpdateTable",
-			Handler:    _Grpc_UpdateTable_Handler,
+			Handler:    _GrpcStore_UpdateTable_Handler,
 		},
 		{
 			MethodName: "Stop",
-			Handler:    _Grpc_Stop_Handler,
+			Handler:    _GrpcStore_Stop_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "QueryPages",
+			Handler:       _GrpcStore_QueryPages_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "gRPC.proto",
 }

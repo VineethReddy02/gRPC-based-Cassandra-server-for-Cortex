@@ -2,14 +2,14 @@ syntax = "proto3";
 
 package grpc;
 
-service grpc {
+service grpc_store {
     //index-client
     rpc BatchWrite(WriteBatch) returns (Nothing);
-    rpc QueryPages(IndexQuery) returns (ReadBatch);
+    rpc QueryPages(IndexQuery) returns (stream ReadBatch);
 
     //storage-client
-    rpc PutChunks(Chunk) returns (Nothing);
-    rpc GetChunks(Chunks) returns (Chunks);
+    rpc PutChunks(ChunksData) returns (Nothing);
+    rpc GetChunks(Chunks) returns (ChunksResponse);
     rpc DeleteChunks(ChunkID) returns (Nothing);
 
     //table-client
@@ -21,6 +21,19 @@ service grpc {
 
     //used by storage-client & index-client
     rpc Stop(Nothing) returns (Nothing);
+}
+
+message ChunksData {
+    repeated Chunk chunks = 1;
+}
+
+message ChunksResponse {
+    repeated ChunkResponse chunks = 1;
+}
+
+message ChunkResponse {
+    uint32 checksum = 1;
+    bytes buf       = 2;
 }
 
 message Nothing {}
@@ -39,23 +52,23 @@ message WriteBatch {
 
 message ReadBatch {
     bytes rangeValue = 1;
-    bytes value = 2;
+    bytes value      = 2;
 }
 
 message IndexEntry {
     string tableName = 1;
     string hashValue = 2;
     bytes rangeValue = 3;
-    bytes value = 4;
+    bytes value      = 4;
 }
 
 message IndexQuery {
-    string tableName                 = 1;
-    string hashValue                 = 2;
-    bytes rangeValuePrefix  = 3;
-    bytes rangeValueStart   = 4;
-    bytes valueEqual        = 5;
-    bool immutable                   = 6;
+    string tableName          = 1;
+    string hashValue          = 2;
+    bytes rangeValuePrefix    = 3;
+    bytes rangeValueStart     = 4;
+    bytes valueEqual          = 5;
+    bool immutable            = 6;
 }
 
 message UpdateTableRequest {
@@ -74,18 +87,6 @@ message TableDesc {
     int64 provisionedRead        = 3;
     int64 provisionedWrite       = 4;
     map<string, string> tags     = 5;
-    AutoScalingConfig writeScale = 6;
-    AutoScalingConfig readScale  = 7;
-}
-
-message AutoScalingConfig {
-    bool enabled        = 1;
-    string roleARN      = 2;
-    int64 minCapacity   = 3;
-    int64 maxCapacity   = 4;
-    int64 outCoolDown   = 5;
-    int64 inCoolDown    = 6;
-    double targetValue   = 7;
 }
 
 message ListTablesResponse {
@@ -101,21 +102,22 @@ message ChunkInfo {
     string userID          = 2;
     int64 from             = 3;
     int64 through          = 4;
-    repeated Label metric          = 5;
+    repeated Labels metric = 5;
     bool checksumSet       = 6;
-    uint32 checksum         = 7;
+    uint32 checksum        = 7;
     bytes encoding         = 8;
-    bytes encoded = 9;
+    bytes encoded          = 9;
 }
 
 message Chunk {
-    bytes buf = 1;
-    string key = 2;
-    string tableName = 3;
+    bytes buf         = 1;
+    string key        = 2;
+    string tableName  = 3;
 }
 
-message Label {
+message Labels {
     string name  = 1;
     string value = 2;
 }
+
 
