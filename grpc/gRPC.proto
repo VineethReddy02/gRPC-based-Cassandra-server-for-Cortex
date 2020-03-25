@@ -51,8 +51,12 @@ message WriteBatch {
 }
 
 message ReadBatch {
+    repeated Row rows = 1;
+}
+
+message Row {
     bytes rangeValue = 1;
-    bytes value      = 2;
+    bytes value = 2;
 }
 
 message IndexEntry {

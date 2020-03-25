@@ -56,23 +56,22 @@ func (s *server) QueryPages(query *grpc.IndexQuery, queryStreamer grpc.GrpcStore
 	defer iter.Close()
 	scanner := iter.Scanner()
 	b1 := &grpc.ReadBatch{
-		RangeValue: []byte{},
-		Value:      []byte{},
+		Rows: []*grpc.Row{},
 	}
 	for scanner.Next() {
-		b := &readBatch{}
-		b1 = &grpc.ReadBatch{
-			RangeValue: b.rangeValue,
-			Value:      b.value,
-		}
-		if err := scanner.Scan(&b1.RangeValue, &b1.Value); err != nil {
+		b := &grpc.Row{}
+		if err := scanner.Scan(&b.RangeValue, &b.Value); err != nil {
 			s.Logger.Error("error with query pages ", zap.Error(err))
 			return errors.WithStack(err)
 		}
-		err := queryStreamer.Send(b1)
-		if err != nil {
-			s.Logger.Error("Unable to stream the results")
-		}
+
+		b1.Rows = append(b1.Rows, b)
 	}
+
+	err := queryStreamer.Send(b1)
+	if err != nil {
+		s.Logger.Error("Unable to stream the results")
+	}
+
 	return nil
 }
