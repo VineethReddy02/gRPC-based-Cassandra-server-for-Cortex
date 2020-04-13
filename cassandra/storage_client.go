@@ -121,7 +121,7 @@ func (cfg *Config) createKeyspace() error {
 }
 
 // NewStorageClient returns a new StorageClient.
-func NewStorageClient(cfg Config, schemaCfg chunk.SchemaConfig) (*server, error) {
+func NewStorageClient(cfg Config) (*server, error) {
 	session, err := cfg.session()
 	if err != nil {
 		return nil, errors.WithStack(err)
@@ -129,7 +129,6 @@ func NewStorageClient(cfg Config, schemaCfg chunk.SchemaConfig) (*server, error)
 	logger, _ := zap.NewProduction()
 	client := &server{
 		Cfg:       cfg,
-		SchemaCfg: schemaCfg,
 		Session:   session,
 		Logger:    logger,
 	}
@@ -213,8 +212,9 @@ func (c *server) DeleteChunks(ctx context.Context, chunkID *grpc.ChunkID) (*grpc
 func (c *server) GetChunks(ctx context.Context, input *grpc.Chunks) (*grpc.ChunksResponse, error) {
 	c.Logger.Info("performing get chunks.")
 	chunkInfo := chunk.Chunk{}
-	var chunksInfo []chunk.Chunk
 	chunkInfo.Metric = labels.Labels{}
+	responseInfo := grpc.ChunksResponse{}
+	var err error
 	for _, chunkData := range input.ChunkInfo {
 		chunkInfo.From = model.Time(chunkData.From)
 		chunkInfo.Through = model.Time(chunkData.Through)
@@ -231,39 +231,29 @@ func (c *server) GetChunks(ctx context.Context, input *grpc.Chunks) (*grpc.Chunk
 			metrics = append(metrics, *metric)
 		}
 		chunkInfo.Metric = metrics
-		chunksInfo = append(chunksInfo, chunkInfo)
+		response := &grpc.ChunkResponse{}
+		buf, err := c.getChunk(ctx, chunkInfo, chunkData.Tablename)
+		if err != nil {
+			c.Logger.Error("failed to get chunk %s", zap.Error(err))
+			return &responseInfo, err
+		}
+		response.Buf = buf.Buf
+		responseInfo.Chunks = append(responseInfo.Chunks, response)
 	}
-	response := &grpc.ChunksResponse{}
-	buf, err := c.getChunk(ctx, chunksInfo)
-	if err != nil {
-		c.Logger.Error("failed to get get chunk %s", zap.Error(err))
-		return response, err
-	}
-	response.Chunks = buf.Chunks
-	return response, err
+
+	return &responseInfo, err
 }
 
-func (s *server) getChunk(ctx context.Context, inputs []chunk.Chunk) (grpc.ChunksResponse, error) {
-	var bufs grpc.ChunksResponse
-	s.Logger.Error("performing getChunk callback func")
-	for _, input := range inputs {
-		tableName, err := s.SchemaCfg.ChunkTableFor(input.From)
-		if err != nil {
-			s.Logger.Error("failed to get get chunk %s", zap.Error(err))
-			return bufs, err
-		}
-		var buf []byte
-		if err := s.Session.Query(fmt.Sprintf("SELECT value FROM %s WHERE hash = ?", tableName), input.ExternalKey()).
-			WithContext(ctx).Scan(&buf); err != nil {
-			s.Logger.Error("failed to do get chunks ", zap.Error(err))
-			return bufs, errors.WithStack(err)
-		}
-		chunkInfo := &grpc.ChunkResponse{
-			Checksum: input.Checksum,
-			Buf:      buf,
-		}
-
-		bufs.Chunks = append(bufs.Chunks, chunkInfo)
+func (s *server) getChunk(ctx context.Context, input chunk.Chunk, tablename string) (grpc.ChunkResponse, error) {
+	chunkInfo := &grpc.ChunkResponse{}
+	var buf []byte
+	if err := s.Session.Query(fmt.Sprintf("SELECT value FROM %s WHERE hash = ?", tablename), input.ExternalKey()).
+		WithContext(ctx).Scan(&buf); err != nil {
+		s.Logger.Error("failed to do get chunks ", zap.Error(err))
+		return *chunkInfo, errors.WithStack(err)
 	}
-	return bufs, nil
+	chunkInfo = &grpc.ChunkResponse{
+		Buf:      buf,
+	}
+	return *chunkInfo, nil
 }

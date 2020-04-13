@@ -12,9 +12,11 @@ require (
 	github.com/prometheus/client_golang v1.5.0
 	github.com/prometheus/common v0.9.1
 	github.com/prometheus/prometheus v1.8.2-0.20200213233353-b90be6f32a33
+	github.com/sercand/kuberesolver v2.4.0+incompatible // indirect
 	github.com/weaveworks/common v0.0.0-20200206153930-760e36ae819a // indirect
-	go.uber.org/zap v1.10.0
-	google.golang.org/grpc v1.25.1
+	go.etcd.io/etcd v0.5.0-alpha.5.0.20200404213814-dbcf540c8800 // indirect
+	go.uber.org/zap v1.14.1
+	google.golang.org/grpc v1.27.0
 	gopkg.in/yaml.v2 v2.2.7
 )
 

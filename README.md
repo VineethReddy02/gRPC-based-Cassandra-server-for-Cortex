@@ -8,22 +8,9 @@ Save below cassandra configuration to ```grpc-cassandra.yaml``` file.
 cfg:
   addresses: localhost # configure cassandra addresses here.
   keyspace: cortex1   # configure desired keyspace here.
-  username: cassandras
+  username: cassandra
   password: cassandra
   auth: true
-
-schema_cfg:
-  configs:
-  - from: 2019-07-29
-    store: grpc
-    object_store: grpc
-    schema: v10
-    index:
-      prefix: index_
-      period: 168h
-    chunks:
-      prefix: chunk_
-      period: 168h
 ```
 
 Steps to run gRPC Cassandra server:

@@ -32,7 +32,6 @@ message ChunksResponse {
 }
 
 message ChunkResponse {
-    uint32 checksum = 1;
     bytes buf       = 2;
 }
 
@@ -56,7 +55,7 @@ message ReadBatch {
 
 message Row {
     bytes rangeValue = 1;
-    bytes value = 2;
+    bytes value      = 2;
 }
 
 message IndexEntry {
@@ -111,6 +110,7 @@ message ChunkInfo {
     uint32 checksum        = 7;
     bytes encoding         = 8;
     bytes encoded          = 9;
+    string tablename       = 10;
 }
 
 message Chunk {

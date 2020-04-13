@@ -12,7 +12,6 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/cortexproject/cortex/pkg/chunk"
 	"github.com/cortexproject/cortex/pkg/util/flagext"
 	"github.com/gocql/gocql"
 	"github.com/pkg/errors"
@@ -23,7 +22,6 @@ import (
 
 type server struct {
 	Cfg       Config             `yaml:"cfg,omitempty"`
-	SchemaCfg chunk.SchemaConfig `yaml:"schema_cfg,omitempty"`
 	Session   *gocql.Session     `yaml:"-"`
 	Logger    *zap.Logger
 }
@@ -56,7 +54,7 @@ func main() {
 		}
 	}
 
-	s1, err := NewStorageClient(cfg.Cfg, cfg.SchemaCfg)
+	s1, err := NewStorageClient(cfg.Cfg)
 	if err != nil {
 		log.Fatalf("Failed to created new storage client")
 	}
