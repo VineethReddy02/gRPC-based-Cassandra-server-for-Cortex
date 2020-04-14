@@ -5,15 +5,15 @@ import (
 	"cortex-cassandra-store/grpc"
 	"flag"
 	"fmt"
+	"github.com/cortexproject/cortex/pkg/chunk/encoding"
+	"github.com/prometheus/common/model"
+	"github.com/prometheus/prometheus/pkg/labels"
 	"strings"
 	"time"
 
 	"github.com/cortexproject/cortex/pkg/chunk"
-	"github.com/cortexproject/cortex/pkg/chunk/encoding"
 	"github.com/gocql/gocql"
 	"github.com/pkg/errors"
-	"github.com/prometheus/common/model"
-	"github.com/prometheus/prometheus/pkg/labels"
 	"go.uber.org/zap"
 )
 
@@ -128,9 +128,9 @@ func NewStorageClient(cfg Config) (*server, error) {
 	}
 	logger, _ := zap.NewProduction()
 	client := &server{
-		Cfg:       cfg,
-		Session:   session,
-		Logger:    logger,
+		Cfg:     cfg,
+		Session: session,
+		Logger:  logger,
 	}
 	return client, nil
 }
@@ -209,11 +209,11 @@ func (c *server) DeleteChunks(ctx context.Context, chunkID *grpc.ChunkID) (*grpc
 	return &grpc.Nothing{}, chunk.ErrNotSupported
 }
 
-func (c *server) GetChunks(ctx context.Context, input *grpc.Chunks) (*grpc.ChunksResponse, error) {
+func (c *server) GetChunks(input *grpc.Chunks, chunksStreamer grpc.GrpcStore_GetChunksServer) error {
 	c.Logger.Info("performing get chunks.")
 	chunkInfo := chunk.Chunk{}
 	chunkInfo.Metric = labels.Labels{}
-	responseInfo := grpc.ChunksResponse{}
+	responseInfo := &grpc.ChunksResponse{}
 	var err error
 	for _, chunkData := range input.ChunkInfo {
 		chunkInfo.From = model.Time(chunkData.From)
@@ -232,16 +232,21 @@ func (c *server) GetChunks(ctx context.Context, input *grpc.Chunks) (*grpc.Chunk
 		}
 		chunkInfo.Metric = metrics
 		response := &grpc.ChunkResponse{}
-		buf, err := c.getChunk(ctx, chunkInfo, chunkData.Tablename)
+		buf, err := c.getChunk(context.Background(), chunkInfo, chunkData.Tablename)
 		if err != nil {
 			c.Logger.Error("failed to get chunk %s", zap.Error(err))
-			return &responseInfo, err
+			return err
 		}
 		response.Buf = buf.Buf
 		responseInfo.Chunks = append(responseInfo.Chunks, response)
 	}
-
-	return &responseInfo, err
+	// you can add custom logic here to break chunks to into smaller chunks and stream.
+	// If size of chunks is large.
+	err = chunksStreamer.Send(responseInfo)
+	if err != nil {
+		c.Logger.Error("Unable to stream the results")
+	}
+	return err
 }
 
 func (s *server) getChunk(ctx context.Context, input chunk.Chunk, tablename string) (grpc.ChunkResponse, error) {
@@ -253,7 +258,7 @@ func (s *server) getChunk(ctx context.Context, input chunk.Chunk, tablename stri
 		return *chunkInfo, errors.WithStack(err)
 	}
 	chunkInfo = &grpc.ChunkResponse{
-		Buf:      buf,
+		Buf: buf,
 	}
 	return *chunkInfo, nil
 }

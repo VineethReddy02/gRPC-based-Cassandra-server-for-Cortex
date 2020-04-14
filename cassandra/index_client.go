@@ -67,7 +67,7 @@ func (s *server) QueryPages(query *grpc.IndexQuery, queryStreamer grpc.GrpcStore
 
 		b1.Rows = append(b1.Rows, b)
 	}
-
+	// you can add custom logic here to break rows and send as stream instead of sending all at once.
 	err := queryStreamer.Send(b1)
 	if err != nil {
 		s.Logger.Error("Unable to stream the results")

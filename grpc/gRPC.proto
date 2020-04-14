@@ -9,7 +9,7 @@ service grpc_store {
 
     //storage-client
     rpc PutChunks(ChunksData) returns (Nothing);
-    rpc GetChunks(Chunks) returns (ChunksResponse);
+    rpc GetChunks(Chunks) returns (stream ChunksResponse);
     rpc DeleteChunks(ChunkID) returns (Nothing);
 
     //table-client
