@@ -8,8 +8,9 @@ service grpc_store {
     rpc QueryPages(IndexQuery) returns (stream ReadBatch);
 
     //storage-client
-    rpc PutChunks(ChunksData) returns (Nothing);
-    rpc GetChunks(Chunks) returns (stream ChunksResponse);
+    rpc PutChunks(Chunks) returns (Nothing);
+    // In GetChunks rpc request send buf as nil
+    rpc GetChunks(Chunks) returns (stream Chunks);
     rpc DeleteChunks(ChunkID) returns (Nothing);
 
     //table-client
@@ -23,8 +24,14 @@ service grpc_store {
     rpc Stop(Nothing) returns (Nothing);
 }
 
-message ChunksData {
+message Chunks {
     repeated Chunk chunks = 1;
+}
+
+message Chunk {
+    bytes buf         = 1;
+    string key        = 2;
+    string tableName  = 3;
 }
 
 message ChunksResponse {
@@ -94,29 +101,6 @@ message TableDesc {
 
 message ListTablesResponse {
     repeated string tables = 1;
-}
-
-message Chunks {
-    repeated ChunkInfo chunkInfo = 1;
-}
-
-message ChunkInfo {
-    int64 fingerPrint      = 1;
-    string userID          = 2;
-    int64 from             = 3;
-    int64 through          = 4;
-    repeated Labels metric = 5;
-    bool checksumSet       = 6;
-    uint32 checksum        = 7;
-    bytes encoding         = 8;
-    bytes encoded          = 9;
-    string tablename       = 10;
-}
-
-message Chunk {
-    bytes buf         = 1;
-    string key        = 2;
-    string tableName  = 3;
 }
 
 message Labels {

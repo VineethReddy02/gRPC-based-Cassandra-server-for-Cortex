@@ -5,9 +5,6 @@ import (
 	"cortex-cassandra-store/grpc"
 	"flag"
 	"fmt"
-	"github.com/cortexproject/cortex/pkg/chunk/encoding"
-	"github.com/prometheus/common/model"
-	"github.com/prometheus/prometheus/pkg/labels"
 	"strings"
 	"time"
 
@@ -138,7 +135,7 @@ func NewStorageClient(cfg Config) (*server, error) {
 // Stop implement chunk.IndexClient.
 func (c *server) Stop(context.Context, *grpc.Nothing) (*grpc.Nothing, error) {
 	c.Session.Close()
-	return nil, nil
+	return &grpc.Nothing{}, nil
 }
 
 // Cassandra batching isn't really useful in this case, its more to do multiple
@@ -191,7 +188,7 @@ func (b *readBatchIter) Value() []byte {
 }
 
 // PutChunks implements chunk.ObjectClient.
-func (c *server) PutChunks(ctx context.Context, chunks *grpc.ChunksData) (*grpc.Nothing, error) {
+func (c *server) PutChunks(ctx context.Context, chunks *grpc.Chunks) (*grpc.Nothing, error) {
 	// Must provide a range key, even though its not useds - hence 0x00.
 	for _, chunkInfo := range chunks.Chunks {
 		c.Logger.Info("performing put chunks.", zap.String("table name", chunkInfo.TableName))
@@ -211,54 +208,19 @@ func (c *server) DeleteChunks(ctx context.Context, chunkID *grpc.ChunkID) (*grpc
 
 func (c *server) GetChunks(input *grpc.Chunks, chunksStreamer grpc.GrpcStore_GetChunksServer) error {
 	c.Logger.Info("performing get chunks.")
-	chunkInfo := chunk.Chunk{}
-	chunkInfo.Metric = labels.Labels{}
-	responseInfo := &grpc.ChunksResponse{}
 	var err error
-	for _, chunkData := range input.ChunkInfo {
-		chunkInfo.From = model.Time(chunkData.From)
-		chunkInfo.Through = model.Time(chunkData.Through)
-		chunkInfo.Fingerprint = model.Fingerprint(chunkData.FingerPrint)
-		chunkInfo.Encoding = encoding.Encoding(chunkData.Encoding[0])
-		chunkInfo.Checksum = chunkData.Checksum
-		chunkInfo.UserID = chunkData.UserID
-		chunkInfo.ChecksumSet = chunkData.ChecksumSet
-		metric := &labels.Label{}
-		var metrics labels.Labels
-		for _, metricLabels := range chunkData.Metric {
-			metric.Name = metricLabels.Name
-			metric.Value = metricLabels.Value
-			metrics = append(metrics, *metric)
-		}
-		chunkInfo.Metric = metrics
-		response := &grpc.ChunkResponse{}
-		buf, err := c.getChunk(context.Background(), chunkInfo, chunkData.Tablename)
+	for _, chunkData := range input.Chunks {
+		err := c.Session.Query(fmt.Sprintf("SELECT value FROM %s WHERE hash = ?", chunkData.TableName), chunkData.Key).
+			WithContext(context.Background()).Scan(&chunkData.Buf);
 		if err != nil {
-			c.Logger.Error("failed to get chunk %s", zap.Error(err))
-			return err
+			c.Logger.Error("failed to do get chunks ", zap.Error(err))
 		}
-		response.Buf = buf.Buf
-		responseInfo.Chunks = append(responseInfo.Chunks, response)
 	}
 	// you can add custom logic here to break chunks to into smaller chunks and stream.
 	// If size of chunks is large.
-	err = chunksStreamer.Send(responseInfo)
+	err = chunksStreamer.Send(input)
 	if err != nil {
 		c.Logger.Error("Unable to stream the results")
 	}
 	return err
-}
-
-func (s *server) getChunk(ctx context.Context, input chunk.Chunk, tablename string) (grpc.ChunkResponse, error) {
-	chunkInfo := &grpc.ChunkResponse{}
-	var buf []byte
-	if err := s.Session.Query(fmt.Sprintf("SELECT value FROM %s WHERE hash = ?", tablename), input.ExternalKey()).
-		WithContext(ctx).Scan(&buf); err != nil {
-		s.Logger.Error("failed to do get chunks ", zap.Error(err))
-		return *chunkInfo, errors.WithStack(err)
-	}
-	chunkInfo = &grpc.ChunkResponse{
-		Buf: buf,
-	}
-	return *chunkInfo, nil
 }
