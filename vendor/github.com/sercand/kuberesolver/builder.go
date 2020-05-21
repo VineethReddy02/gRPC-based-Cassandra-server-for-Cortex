@@ -2,13 +2,15 @@ package kuberesolver
 
 import (
 	"fmt"
-	//"io"
+	"io"
 	"net"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/resolver"
@@ -19,12 +21,33 @@ const (
 	defaultFreq      = time.Minute * 30
 )
 
+var (
+	endpointsForTarget = promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "kuberesolver_endpoints_total",
+			Help: "The number of endpoints for a given target",
+		},
+		[]string{"target"},
+	)
+	addressesForTarget = promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "kuberesolver_addresses_total",
+			Help: "The number of addresses for a given target",
+		},
+		[]string{"target"},
+	)
+)
+
 type targetInfo struct {
 	serviceName       string
 	serviceNamespace  string
 	port              string
 	resolveByPortName bool
 	useFirstPort      bool
+}
+
+func (ti targetInfo) String() string {
+	return fmt.Sprintf("kubernetes:///%s/%s:%s", ti.serviceNamespace, ti.serviceName, ti.port)
 }
 
 // RegisterInCluster registers the kuberesolver builder to grpc
@@ -38,11 +61,10 @@ func RegisterInClusterWithSchema(schema string) {
 
 // NewBuilder creates a kubeBuilder which is used to factory Kuberesolvers.
 func NewBuilder(client K8sClient, schema string) resolver.Builder {
-	//return &kubeBuilder{
-	//	//k8sClient: client,
-	//	//schema:    schema,
-	//}
-	return nil
+	return &kubeBuilder{
+		k8sClient: client,
+		schema:    schema,
+	}
 }
 
 type kubeBuilder struct {
@@ -106,38 +128,41 @@ func parseResolverTarget(target resolver.Target) (targetInfo, error) {
 //
 // gRPC dial calls Build synchronously, and fails if the returned error is
 // not nil.
-//func (b *kubeBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOption) (resolver.Resolver, error) {
-//	if b.k8sClient == nil {
-//		if cl, err := NewInClusterK8sClient(); err == nil {
-//			b.k8sClient = cl
-//		} else {
-//			return nil, err
-//		}
-//	}
-//	ti, err := parseResolverTarget(target)
-//	if err != nil {
-//		return nil, err
-//	}
-//	ctx, cancel := context.WithCancel(context.Background())
-//	r := &kResolver{
-//		target:    ti,
-//		ctx:       ctx,
-//		cancel:    cancel,
-//		cc:        cc,
-//		rn:        make(chan struct{}, 1),
-//		k8sClient: b.k8sClient,
-//		t:         time.NewTimer(defaultFreq),
-//		freq:      defaultFreq,
-//	}
-//	go until(func() {
-//		r.wg.Add(1)
-//		err := r.watch()
-//		if err != nil && err != io.EOF {
-//			grpclog.Errorf("kuberesolver: watching ended with error='%v', will reconnect again", err)
-//		}
-//	}, time.Second, ctx.Done())
-//	return r, nil
-//}
+func (b *kubeBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
+	if b.k8sClient == nil {
+		if cl, err := NewInClusterK8sClient(); err == nil {
+			b.k8sClient = cl
+		} else {
+			return nil, err
+		}
+	}
+	ti, err := parseResolverTarget(target)
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	r := &kResolver{
+		target:    ti,
+		ctx:       ctx,
+		cancel:    cancel,
+		cc:        cc,
+		rn:        make(chan struct{}, 1),
+		k8sClient: b.k8sClient,
+		t:         time.NewTimer(defaultFreq),
+		freq:      defaultFreq,
+
+		endpoints: endpointsForTarget.WithLabelValues(ti.String()),
+		addresses: addressesForTarget.WithLabelValues(ti.String()),
+	}
+	go until(func() {
+		r.wg.Add(1)
+		err := r.watch()
+		if err != nil && err != io.EOF {
+			grpclog.Errorf("kuberesolver: watching ended with error='%v', will reconnect again", err)
+		}
+	}, time.Second, ctx.Done())
+	return r, nil
+}
 
 // Scheme returns the scheme supported by this resolver.
 // Scheme is defined at https://github.com/grpc/grpc/blob/master/doc/naming.md.
@@ -157,16 +182,19 @@ type kResolver struct {
 	wg   sync.WaitGroup
 	t    *time.Timer
 	freq time.Duration
+
+	endpoints prometheus.Gauge
+	addresses prometheus.Gauge
 }
 
 // ResolveNow will be called by gRPC to try to resolve the target name again.
 // It's just a hint, resolver can ignore this if it's not necessary.
-//func (k *kResolver) ResolveNow(resolver.ResolveNowOption) {
-//	select {
-//	case k.rn <- struct{}{}:
-//	default:
-//	}
-//}
+func (k *kResolver) ResolveNow(resolver.ResolveNowOptions) {
+	select {
+	case k.rn <- struct{}{}:
+	default:
+	}
+}
 
 // Close closes the resolver.
 func (k *kResolver) Close() {
@@ -217,6 +245,9 @@ func (k *kResolver) handle(e Endpoints) {
 	if len(result) > 0 {
 		k.cc.NewAddress(result)
 	}
+
+	k.endpoints.Set(float64(len(e.Subsets)))
+	k.addresses.Set(float64(len(result)))
 }
 
 func (k *kResolver) resolve() {

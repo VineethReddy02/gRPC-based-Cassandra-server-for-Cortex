@@ -112,6 +112,7 @@ type ServerConfig struct {
 
 	AutoCompactionRetention time.Duration
 	AutoCompactionMode      string
+	CompactionBatchLimit    int
 	QuotaBackendBytes       int64
 	MaxTxnOps               uint
 
@@ -145,8 +146,6 @@ type ServerConfig struct {
 	// Must be either: "LoggerConfig != nil" or "LoggerCore != nil && LoggerWriteSyncer != nil".
 	LoggerCore        zapcore.Core
 	LoggerWriteSyncer zapcore.WriteSyncer
-
-	Debug bool
 
 	ForceNewCluster bool
 

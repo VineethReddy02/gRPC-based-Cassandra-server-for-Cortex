@@ -2,61 +2,75 @@ syntax = "proto3";
 
 package grpc;
 
+import "google/protobuf/empty.proto";
+
 service grpc_store {
     //index-client
-    rpc BatchWrite(WriteBatch) returns (Nothing);
-    rpc QueryPages(IndexQuery) returns (stream ReadBatch);
+    rpc WriteIndex(WriteIndexRequest) returns (google.protobuf.Empty);
+    rpc QueryIndex(QueryIndexRequest) returns (stream QueryIndexResponse);
+    rpc DeleteIndex(DeleteIndexRequest) returns (google.protobuf.Empty);
 
     //storage-client
-    rpc PutChunks(Chunks) returns (Nothing);
-    // In GetChunks rpc request send buf as nil
-    rpc GetChunks(Chunks) returns (stream Chunks);
-    rpc DeleteChunks(ChunkID) returns (Nothing);
+    rpc PutChunks(PutChunksRequest) returns (google.protobuf.Empty);
+    //In GetChunks rpc request send buf as nil
+    rpc GetChunks(GetChunksRequest) returns (stream GetChunksResponse);
+    rpc DeleteChunks(ChunkID) returns (google.protobuf.Empty);
 
     //table-client
-    rpc ListTables(Nothing) returns (ListTablesResponse);
-    rpc CreateTable(TableDesc) returns (Nothing);
-    rpc DeleteTable(TableName) returns (Nothing);
-    rpc DescribeTable(TableName) returns (DescribeTableResponse);
-    rpc UpdateTable(UpdateTableRequest) returns (Nothing);
+    rpc ListTables(google.protobuf.Empty) returns (ListTablesResponse);
+    rpc CreateTable(TableDesc) returns (google.protobuf.Empty);
+    rpc DeleteTable(DeleteTableRequest) returns (google.protobuf.Empty);
+    rpc DescribeTable(DescribeTableRequest) returns (DescribeTableResponse);
+    rpc UpdateTable(UpdateTableRequest) returns (google.protobuf.Empty);
 
     //used by storage-client & index-client
-    rpc Stop(Nothing) returns (Nothing);
+    rpc Stop(google.protobuf.Empty) returns (google.protobuf.Empty);
 }
 
-message Chunks {
+message PutChunksRequest {
+    repeated Chunk chunks = 1;
+}
+
+message GetChunksRequest {
+    repeated Chunk chunks = 1;
+}
+
+message GetChunksResponse {
     repeated Chunk chunks = 1;
 }
 
 message Chunk {
-    bytes buf         = 1;
+    bytes encoded     = 1;
     string key        = 2;
     string tableName  = 3;
 }
 
-message ChunksResponse {
-    repeated ChunkResponse chunks = 1;
-}
-
-message ChunkResponse {
-    bytes buf       = 2;
-}
-
-message Nothing {}
-
 message ChunkID {
-    string chunkId = 1;
+    string chunkID = 1;
 }
 
-message TableName {
+message DeleteTableRequest {
+    string tableName = 1;
+}
+
+message DescribeTableRequest {
     string tableName = 1;
 }
 
 message WriteBatch {
-    repeated IndexEntry indexEntry = 1;
+    repeated IndexEntry writes     = 1;
+    repeated IndexEntry deletes    = 2;
 }
 
-message ReadBatch {
+message WriteIndexRequest {
+    repeated IndexEntry writes    = 1;
+}
+
+message DeleteIndexRequest {
+    repeated IndexEntry deletes   = 1;
+}
+
+message QueryIndexResponse {
     repeated Row rows = 1;
 }
 
@@ -72,7 +86,7 @@ message IndexEntry {
     bytes value      = 4;
 }
 
-message IndexQuery {
+message QueryIndexRequest {
     string tableName          = 1;
     string hashValue          = 2;
     bytes rangeValuePrefix    = 3;
@@ -100,7 +114,7 @@ message TableDesc {
 }
 
 message ListTablesResponse {
-    repeated string tables = 1;
+    repeated string tableNames = 1;
 }
 
 message Labels {

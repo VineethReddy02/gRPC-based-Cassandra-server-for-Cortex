@@ -5,6 +5,7 @@ import (
 	"cortex-cassandra-store/grpc"
 	"flag"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/empty"
 	"strings"
 	"time"
 
@@ -133,9 +134,9 @@ func NewStorageClient(cfg Config) (*server, error) {
 }
 
 // Stop implement chunk.IndexClient.
-func (c *server) Stop(context.Context, *grpc.Nothing) (*grpc.Nothing, error) {
+func (c *server) Stop(context.Context, *empty.Empty) (*empty.Empty, error) {
 	c.Session.Close()
-	return &grpc.Nothing{}, nil
+	return &empty.Empty{}, nil
 }
 
 // Cassandra batching isn't really useful in this case, its more to do multiple
@@ -188,37 +189,38 @@ func (b *readBatchIter) Value() []byte {
 }
 
 // PutChunks implements chunk.ObjectClient.
-func (c *server) PutChunks(ctx context.Context, chunks *grpc.Chunks) (*grpc.Nothing, error) {
+func (c *server) PutChunks(ctx context.Context, chunks *grpc.PutChunksRequest) (*empty.Empty, error) {
 	// Must provide a range key, even though its not useds - hence 0x00.
 	for _, chunkInfo := range chunks.Chunks {
 		c.Logger.Info("performing put chunks.", zap.String("table name", chunkInfo.TableName))
 		q := c.Session.Query(fmt.Sprintf("INSERT INTO %s (hash, range, value) VALUES (?, 0x00, ?)",
-			chunkInfo.TableName), chunkInfo.Key, chunkInfo.Buf)
+			chunkInfo.TableName), chunkInfo.Key, chunkInfo.Encoded)
 		if err := q.WithContext(ctx).Exec(); err != nil {
 			c.Logger.Error("failed to put chunks %s", zap.Error(err))
-			return &grpc.Nothing{}, errors.WithStack(err)
+			return &empty.Empty{}, errors.WithStack(err)
 		}
 	}
-	return &grpc.Nothing{}, nil
+	return &empty.Empty{}, nil
 }
 
-func (c *server) DeleteChunks(ctx context.Context, chunkID *grpc.ChunkID) (*grpc.Nothing, error) {
-	return &grpc.Nothing{}, chunk.ErrNotSupported
+func (c *server) DeleteChunks(ctx context.Context, chunkID *grpc.ChunkID) (*empty.Empty, error) {
+	return &empty.Empty{}, chunk.ErrNotSupported
 }
 
-func (c *server) GetChunks(input *grpc.Chunks, chunksStreamer grpc.GrpcStore_GetChunksServer) error {
+func (c *server) GetChunks(input *grpc.GetChunksRequest, chunksStreamer grpc.GrpcStore_GetChunksServer) error {
 	c.Logger.Info("performing get chunks.")
 	var err error
 	for _, chunkData := range input.Chunks {
 		err := c.Session.Query(fmt.Sprintf("SELECT value FROM %s WHERE hash = ?", chunkData.TableName), chunkData.Key).
-			WithContext(context.Background()).Scan(&chunkData.Buf);
+			WithContext(context.Background()).Scan(&chunkData.Encoded);
 		if err != nil {
 			c.Logger.Error("failed to do get chunks ", zap.Error(err))
 		}
 	}
 	// you can add custom logic here to break chunks to into smaller chunks and stream.
 	// If size of chunks is large.
-	err = chunksStreamer.Send(input)
+	res := &grpc.GetChunksResponse{Chunks: input.Chunks}
+	err = chunksStreamer.Send(res)
 	if err != nil {
 		c.Logger.Error("Unable to stream the results")
 	}

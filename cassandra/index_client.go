@@ -4,26 +4,27 @@ import (
 	"context"
 	"cortex-cassandra-store/grpc"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/empty"
 
 	"github.com/gocql/gocql"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
-func (s *server) BatchWrite(ctx context.Context, batch *grpc.WriteBatch) (*grpc.Nothing, error) {
-	for i, entry := range batch.IndexEntry {
-		s.Logger.Info("performing batch write. ", zap.String("Table name ", batch.IndexEntry[i].TableName))
+func (s *server) WriteIndex(ctx context.Context, batch *grpc.WriteIndexRequest) (*empty.Empty, error) {
+	for i, entry := range batch.Writes {
+		s.Logger.Info("performing batch write. ", zap.String("Table name ", batch.Writes[i].TableName))
 		err := s.Session.Query(fmt.Sprintf("INSERT INTO %s (hash, range, value) VALUES (?, ?, ?)",
 			entry.TableName), entry.HashValue, entry.RangeValue, entry.Value).WithContext(ctx).Exec()
 		if err != nil {
 			s.Logger.Error("failed to perform batch write ", zap.Error(err))
-			return &grpc.Nothing{}, errors.WithStack(err)
+			return &empty.Empty{}, errors.WithStack(err)
 		}
 	}
-	return &grpc.Nothing{}, nil
+	return &empty.Empty{}, nil
 }
 
-func (s *server) QueryPages(query *grpc.IndexQuery, queryStreamer grpc.GrpcStore_QueryPagesServer) error {
+func (s *server) QueryIndex(query *grpc.QueryIndexRequest, queryStreamer grpc.GrpcStore_QueryIndexServer) error {
 	var q *gocql.Query
 	s.Logger.Info("performing Query Pages ", zap.String("table name ", query.TableName))
 	switch {
@@ -55,7 +56,7 @@ func (s *server) QueryPages(query *grpc.IndexQuery, queryStreamer grpc.GrpcStore
 	iter := q.WithContext(context.Background()).Iter()
 	defer iter.Close()
 	scanner := iter.Scanner()
-	b1 := &grpc.ReadBatch{
+	b1 := &grpc.QueryIndexResponse{
 		Rows: []*grpc.Row{},
 	}
 	for scanner.Next() {
@@ -74,4 +75,16 @@ func (s *server) QueryPages(query *grpc.IndexQuery, queryStreamer grpc.GrpcStore
 	}
 
 	return nil
+}
+
+func (s *server) DeleteIndex(ctx context.Context, request *grpc.DeleteIndexRequest) (*empty.Empty, error) {
+	for _, entry := range request.Deletes {
+		err := s.Session.Query(fmt.Sprintf("DELETE FROM %s WHERE hash = ? and range = ?",
+			entry.TableName), entry.HashValue, entry.RangeValue).WithContext(ctx).Exec()
+		if err != nil {
+			s.Logger.Error("failed to perform batch write ", zap.Error(err))
+			return &empty.Empty{}, errors.WithStack(err)
+		}
+	}
+	return &empty.Empty{}, nil
 }

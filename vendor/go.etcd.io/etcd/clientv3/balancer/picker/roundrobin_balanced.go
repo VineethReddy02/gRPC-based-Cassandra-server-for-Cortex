@@ -15,78 +15,81 @@
 package picker
 
 import (
-	//"context"
+	"context"
 	"sync"
 
 	"go.uber.org/zap"
-	//"go.uber.org/zap/zapcore"
+	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc/balancer"
 	"google.golang.org/grpc/resolver"
 )
 
-// NewRoundrobinBalanced returns a new roundrobin balanced picker.
-//func NewRoundrobinBalanced(
-//	lg *zap.Logger,
-//	scs []balancer.SubConn,
-//	addrToSc map[resolver.Address]balancer.SubConn,
-//	scToAddr map[balancer.SubConn]resolver.Address,
-//) Picker {
-//	return &rrBalanced{
-//		lg:       lg,
-//		scs:      scs,
-//		addrToSc: addrToSc,
-//		scToAddr: scToAddr,
-//	}
-//}
+// newRoundrobinBalanced returns a new roundrobin balanced picker.
+func newRoundrobinBalanced(cfg Config) Picker {
+	scs := make([]balancer.SubConn, 0, len(cfg.SubConnToResolverAddress))
+	for sc := range cfg.SubConnToResolverAddress {
+		scs = append(scs, sc)
+	}
+	return &rrBalanced{
+		p:        RoundrobinBalanced,
+		lg:       cfg.Logger,
+		scs:      scs,
+		scToAddr: cfg.SubConnToResolverAddress,
+	}
+}
 
 type rrBalanced struct {
+	p Policy
+
 	lg *zap.Logger
 
-	mu   sync.RWMutex
-	next int
-	scs  []balancer.SubConn
-
-	addrToSc map[resolver.Address]balancer.SubConn
+	mu       sync.RWMutex
+	next     int
+	scs      []balancer.SubConn
 	scToAddr map[balancer.SubConn]resolver.Address
 }
 
+func (rb *rrBalanced) String() string { return rb.p.String() }
+
 // Pick is called for every client request.
-//func (rb *rrBalanced) Pick(ctx context.Context, opts balancer.PickOptions) (balancer.SubConn, func(balancer.DoneInfo), error) {
-//	rb.mu.RLock()
-//	n := len(rb.scs)
-//	rb.mu.RUnlock()
-//	if n == 0 {
-//		return nil, nil, balancer.ErrNoSubConnAvailable
-//	}
-//
-//	rb.mu.Lock()
-//	cur := rb.next
-//	sc := rb.scs[cur]
-//	picked := rb.scToAddr[sc].Addr
-//	rb.next = (rb.next + 1) % len(rb.scs)
-//	rb.mu.Unlock()
-//
-//	rb.lg.Debug(
-//		"picked",
-//		zap.String("address", picked),
-//		zap.Int("subconn-index", cur),
-//		zap.Int("subconn-size", n),
-//	)
-//
-//	doneFunc := func(info balancer.DoneInfo) {
-//		// TODO: error handling?
-//		fss := []zapcore.Field{
-//			zap.Error(info.Err),
-//			zap.String("address", picked),
-//			zap.Bool("success", info.Err == nil),
-//			zap.Bool("bytes-sent", info.BytesSent),
-//			zap.Bool("bytes-received", info.BytesReceived),
-//		}
-//		if info.Err == nil {
-//			rb.lg.Debug("balancer done", fss...)
-//		} else {
-//			rb.lg.Warn("balancer failed", fss...)
-//		}
-//	}
-//	return sc, doneFunc, nil
-//}
+func (rb *rrBalanced) Pick(ctx context.Context, opts balancer.PickInfo) (balancer.SubConn, func(balancer.DoneInfo), error) {
+	rb.mu.RLock()
+	n := len(rb.scs)
+	rb.mu.RUnlock()
+	if n == 0 {
+		return nil, nil, balancer.ErrNoSubConnAvailable
+	}
+
+	rb.mu.Lock()
+	cur := rb.next
+	sc := rb.scs[cur]
+	picked := rb.scToAddr[sc].Addr
+	rb.next = (rb.next + 1) % len(rb.scs)
+	rb.mu.Unlock()
+
+	rb.lg.Debug(
+		"picked",
+		zap.String("picker", rb.p.String()),
+		zap.String("address", picked),
+		zap.Int("subconn-index", cur),
+		zap.Int("subconn-size", n),
+	)
+
+	doneFunc := func(info balancer.DoneInfo) {
+		// TODO: error handling?
+		fss := []zapcore.Field{
+			zap.Error(info.Err),
+			zap.String("picker", rb.p.String()),
+			zap.String("address", picked),
+			zap.Bool("success", info.Err == nil),
+			zap.Bool("bytes-sent", info.BytesSent),
+			zap.Bool("bytes-received", info.BytesReceived),
+		}
+		if info.Err == nil {
+			rb.lg.Debug("balancer done", fss...)
+		} else {
+			rb.lg.Warn("balancer failed", fss...)
+		}
+	}
+	return sc, doneFunc, nil
+}

@@ -6,6 +6,8 @@ package gocql
 
 import (
 	"context"
+	crand "crypto/rand"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"math"
@@ -333,8 +335,7 @@ func RoundRobinHostPolicy() HostSelectionPolicy {
 }
 
 type roundRobinHostPolicy struct {
-	hosts           cowHostList
-	lastUsedHostIdx uint64
+	hosts cowHostList
 }
 
 func (r *roundRobinHostPolicy) IsLocal(*HostInfo) bool              { return true }
@@ -343,8 +344,16 @@ func (r *roundRobinHostPolicy) SetPartitioner(partitioner string)   {}
 func (r *roundRobinHostPolicy) Init(*Session)                       {}
 
 func (r *roundRobinHostPolicy) Pick(qry ExecutableQuery) NextHost {
-	nextStartOffset := atomic.AddUint64(&r.lastUsedHostIdx, 1)
-	return roundRobbin(int(nextStartOffset), r.hosts.get())
+	src := r.hosts.get()
+	hosts := make([]*HostInfo, len(src))
+	copy(hosts, src)
+
+	rand := rand.New(randSource())
+	rand.Shuffle(len(hosts), func(i, j int) {
+		hosts[i], hosts[j] = hosts[j], hosts[i]
+	})
+
+	return roundRobbin(hosts)
 }
 
 func (r *roundRobinHostPolicy) AddHost(host *HostInfo) {
@@ -591,11 +600,10 @@ func (t *tokenAwareHostPolicy) Pick(qry ExecutableQuery) NextHost {
 	if ht == nil {
 		host, _ := meta.tokenRing.GetHostForToken(token)
 		replicas = []*HostInfo{host}
+	} else if t.shuffleReplicas {
+		replicas = shuffleHosts(replicas)
 	} else {
 		replicas = ht.hosts
-		if t.shuffleReplicas {
-			replicas = shuffleHosts(replicas)
-		}
 	}
 
 	var (
@@ -793,10 +801,9 @@ func (host selectedHostPoolHost) Mark(err error) {
 }
 
 type dcAwareRR struct {
-	local           string
-	localHosts      cowHostList
-	remoteHosts     cowHostList
-	lastUsedHostIdx uint64
+	local       string
+	localHosts  cowHostList
+	remoteHosts cowHostList
 }
 
 // DCAwareRoundRobinPolicy is a host selection policies which will prioritize and
@@ -833,51 +840,54 @@ func (d *dcAwareRR) RemoveHost(host *HostInfo) {
 func (d *dcAwareRR) HostUp(host *HostInfo)   { d.AddHost(host) }
 func (d *dcAwareRR) HostDown(host *HostInfo) { d.RemoveHost(host) }
 
-// This function is supposed to be called in a fashion
-// roundRobbin(offset, hostsPriority1, hostsPriority2, hostsPriority3 ... )
-//
-// E.g. for DC-naive strategy:
-// roundRobbin(offset, allHosts)
-//
-// For tiered and DC-aware strategy:
-// roundRobbin(offset, localHosts, remoteHosts)
-func roundRobbin(shift int, hosts ...[]*HostInfo) NextHost {
-	currentLayer := 0
-	currentlyObserved := 0
+var randSeed int64
 
+func init() {
+	p := make([]byte, 8)
+	if _, err := crand.Read(p); err != nil {
+		panic(err)
+	}
+	randSeed = int64(binary.BigEndian.Uint64(p))
+}
+
+func randSource() rand.Source {
+	return rand.NewSource(atomic.AddInt64(&randSeed, 1))
+}
+
+func roundRobbin(hosts []*HostInfo) NextHost {
+	var i int
 	return func() SelectedHost {
+		for i < len(hosts) {
+			h := hosts[i]
+			i++
 
-		// iterate over layers
-		for {
-			if currentLayer == len(hosts) {
-				return nil
-			}
-
-			currentLayerSize := len(hosts[currentLayer])
-
-			// iterate over hosts within a layer
-			for {
-				currentlyObserved++
-				if currentlyObserved > currentLayerSize {
-					currentLayer++
-					currentlyObserved = 0
-					break
-				}
-
-				h := hosts[currentLayer][(shift+currentlyObserved)%currentLayerSize]
-
-				if h.IsUp() {
-					return (*selectedHost)(h)
-				}
-
+			if h.IsUp() {
+				return (*selectedHost)(h)
 			}
 		}
+
+		return nil
 	}
 }
 
 func (d *dcAwareRR) Pick(q ExecutableQuery) NextHost {
-	nextStartOffset := atomic.AddUint64(&d.lastUsedHostIdx, 1)
-	return roundRobbin(int(nextStartOffset), d.localHosts.get(), d.remoteHosts.get())
+	local := d.localHosts.get()
+	remote := d.remoteHosts.get()
+
+	hosts := make([]*HostInfo, len(local)+len(remote))
+	n := copy(hosts, local)
+	copy(hosts[n:], remote)
+
+	// TODO: use random chose-2 but that will require plumbing information
+	// about connection/host load to here
+	r := rand.New(randSource())
+	for _, l := range [][]*HostInfo{hosts[:len(local)], hosts[len(local):]} {
+		r.Shuffle(len(l), func(i, j int) {
+			l[i], l[j] = l[j], l[i]
+		})
+	}
+
+	return roundRobbin(hosts)
 }
 
 // ConvictionPolicy interface is used by gocql to determine if a host should be
@@ -932,15 +942,10 @@ func (c *ConstantReconnectionPolicy) GetMaxRetries() int {
 type ExponentialReconnectionPolicy struct {
 	MaxRetries      int
 	InitialInterval time.Duration
-	MaxInterval     time.Duration
 }
 
 func (e *ExponentialReconnectionPolicy) GetInterval(currentRetry int) time.Duration {
-	max := e.MaxInterval
-	if max < e.InitialInterval {
-		max = math.MaxInt16 * time.Second
-	}
-	return getExponentialTime(e.InitialInterval, max, currentRetry)
+	return getExponentialTime(e.InitialInterval, math.MaxInt16*time.Second, currentRetry)
 }
 
 func (e *ExponentialReconnectionPolicy) GetMaxRetries() int {
