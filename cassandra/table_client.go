@@ -25,15 +25,15 @@ func (c *server) ListTables(context.Context, *empty.Empty) (*rpc.ListTablesRespo
 	return result, nil
 }
 
-func (c *server) CreateTable(ctx context.Context, desc *rpc.TableDesc) (*empty.Empty, error) {
-	c.Logger.Info("creating the table ", zap.String("Table Name", desc.Name))
+func (c *server) CreateTable(ctx context.Context, req *rpc.CreateTableRequest) (*empty.Empty, error) {
+	c.Logger.Info("creating the table ", zap.String("Table Name", req.Desc.Name))
 	err := c.Session.Query(fmt.Sprintf(`
 		CREATE TABLE IF NOT EXISTS %s (
 			hash text,
 			range blob,
 			value blob,
 			PRIMARY KEY (hash, range)
-		)`, desc.Name)).WithContext(ctx).Exec()
+		)`, req.Desc.Name)).WithContext(ctx).Exec()
 	if err != nil {
 		c.Logger.Error("failed to create the table %s", zap.Error(err))
 	}
